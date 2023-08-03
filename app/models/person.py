@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, deferred
 
-from ..lib.db import Base
+from ..libs.db import Base
 import app.models.country
 
 class Person(Base):

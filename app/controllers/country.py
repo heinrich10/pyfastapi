@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from ..repositories.country import get_countries, get_country
-from ..lib.db import get_db
+from ..libs.db import get_db
 
 
 router = APIRouter()

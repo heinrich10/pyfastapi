@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Relationship, deferred
-from ..lib.db import Base
+from ..libs.db import Base
 
 import app.models.person
 import app.models.continent

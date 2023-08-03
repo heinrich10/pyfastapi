@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Relationship
 
-from ..lib.db import Base
+from ..libs.db import Base
 import app.models.country
 
 
