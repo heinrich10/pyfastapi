@@ -17,3 +17,7 @@ sample backend using pyfastapi, sqlalchemy, and alembic
 1. run `alembic upgrade head`
 2. sql schema and the data should be on `./sql_app.db`
 3. refer to `alembic.ini` to change other configuration, it uses .env for the DB url
+
+## Tests
+1. make sure `alembic` is run once
+2. run 'pytest'

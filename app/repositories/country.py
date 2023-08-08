@@ -1,6 +1,7 @@
 
 from ..models.country import Country
 from sqlalchemy.orm import Session, contains_eager
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 
 def get_country(db: Session, code: str):
@@ -8,4 +9,4 @@ def get_country(db: Session, code: str):
 
 
 def get_countries(db: Session):
-    return db.query(Country).all()
+    return paginate(db.query(Country))
