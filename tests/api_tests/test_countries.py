@@ -18,10 +18,7 @@ def _get_countries(**kwargs):
     )
     body = response.json()
     assert response.status_code == 200
-    assert "items" in body
-    assert "total" in body
-    assert "limit" in body
-    assert "offset" in body
+    assert all(k in body for k in ["items", "total", "limit", "offset"])
     return response, body
 
 
@@ -31,15 +28,15 @@ def test_get_countries_default_limit():
 
 
 def test_get_countries_limit_10():
-    limit = '10'
+    limit = "10"
     response, body = _get_countries(limit=limit)
-    assert len(body['items']) == int(limit)
+    assert len(body["items"]) == int(limit)
     assert body["items"][0]["code"] == FIRST_COUNTRY
 
 
 def test_get_countries_limit_10_offset_10():
-    limit = '5'
-    offset = '10'
+    limit = "5"
+    offset = "10"
     response, body = _get_countries(limit=limit, offset=offset)
     assert len(body["items"]) == int(limit)
     assert body["items"][0]["code"] != FIRST_COUNTRY
