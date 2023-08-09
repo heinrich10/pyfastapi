@@ -1,5 +1,4 @@
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..repositories.continent import get_continent, get_continents
@@ -11,11 +10,13 @@ router = APIRouter()
 
 @router.get("/")
 def get_all_continents(db: Session = Depends(get_db)):
-    person = get_continents(db)
-    return person
+    continents = get_continents(db)
+    return continents
 
 
 @router.get("/{code}")
 def get_one_continents(db: Session = Depends(get_db), code: str = None):
-    person = get_continent(db, code)
-    return person
+    continent = get_continent(db, code)
+    if not continent:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Continent {code} not found")
+    return continent
