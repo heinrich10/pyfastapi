@@ -22,12 +22,12 @@ def _get_countries(**kwargs):
     return response, body
 
 
-def test_get_countries_default_limit(init_db):
+def test_get_countries_default_limit():
     response, body = _get_countries()
     assert len(body['items']) == DEFAULT_LIMIT
 
 
-def test_get_countries_limit_10(init_db):
+def test_get_countries_limit_10():
     limit = "10"
     response, body = _get_countries(limit=limit)
     assert len(body["items"]) == int(limit)
