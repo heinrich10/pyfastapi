@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from pyfastapi.main import app
 
+
 client = TestClient(app)
 
 

@@ -1,6 +1,6 @@
 
 from pyfastapi.models.continent import Continent
-from sqlalchemy.orm import Session, lazyload
+from sqlalchemy.orm import Session
 
 
 def get_continent(db: Session, code: str):

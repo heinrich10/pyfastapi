@@ -160,4 +160,4 @@ cython_debug/
 .idea/
 
 # sqlite data
-sql_app.db
+*.db
