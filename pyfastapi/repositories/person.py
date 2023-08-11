@@ -1,6 +1,6 @@
 
-from ..models.person import Person
-from ..schemas.person import PersonSchema
+from pyfastapi.models.person import Person
+from pyfastapi.schemas.person import PersonSchema
 from sqlalchemy.orm import Session, joinedload
 
 

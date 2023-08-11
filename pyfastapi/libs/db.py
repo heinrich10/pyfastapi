@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from app.config import config
+from pyfastapi.config import config
 
 
 SQLALCHEMY_DATABASE_URL = config["DB_HOST"]

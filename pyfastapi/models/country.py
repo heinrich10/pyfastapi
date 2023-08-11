@@ -1,9 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Relationship, deferred
-from ..libs.db import Base
-
-import app.models.person
-import app.models.continent
+from pyfastapi.libs.db import Base
 
 
 class Country(Base):
@@ -15,8 +12,7 @@ class Country(Base):
     symbol = Column(String(10))
     capital = Column(String(80))
     currency = Column(String(3))
-    # continent_code = deferred(Column(String(2), ForeignKey("continents.code")))
-    continent_code = Column(String(2), ForeignKey("continents.code"))
+    continent_code = deferred(Column(String(2), ForeignKey("continents.code")))
     alpha_3 = Column(String(3))
 
     person = Relationship("Person", back_populates="country")

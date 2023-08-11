@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
+from pyfastapi.main import app
 
 DEFAULT_LIMIT = 50
 FIRST_COUNTRY = "AF"

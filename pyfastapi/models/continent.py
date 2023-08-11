@@ -1,8 +1,7 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Relationship
 
-from ..libs.db import Base
-import app.models.country
+from pyfastapi.libs.db import Base
 
 
 class Continent(Base):

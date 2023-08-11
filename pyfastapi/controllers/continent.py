@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..repositories.continent import get_continent, get_continents
-from ..libs.db import get_db
+from pyfastapi.repositories.continent import get_continent, get_continents
+from pyfastapi.libs.db import get_db
 
 
 router = APIRouter()

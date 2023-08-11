@@ -1,4 +1,4 @@
-from app.main import app
+from pyfastapi.main import app
 import uvicorn
 
 
