@@ -9,7 +9,7 @@ sample backend using pyfastapi, sqlalchemy, and alembic
 ## How to run
 1. install dependencies `pip install -r requirements.txt`
 2. copy `.env.example` to `.env` and change the values if needed
-2. run the app `python main.py`
+2. run the app `python run.py`
 3. call the api endpoint `curl http://localhost:5000/persons`
 4. open `http://localhost:5000/docs` to view then openapi docs
 
