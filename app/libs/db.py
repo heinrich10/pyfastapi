@@ -6,7 +6,6 @@ from app.config import config
 
 
 SQLALCHEMY_DATABASE_URL = config.get("DB_HOST")
-print(f"this is the url: {SQLALCHEMY_DATABASE_URL}")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
