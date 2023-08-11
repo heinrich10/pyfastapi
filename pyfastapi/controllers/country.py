@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination import LimitOffsetPage
 from sqlalchemy.orm import Session
 
-from ..repositories.country import get_countries, get_country
-from ..schemas.country import CountryListSchema
-from ..libs.db import get_db
+from pyfastapi.repositories.country import get_countries, get_country
+from pyfastapi.schemas.country import CountryListSchema
+from pyfastapi.libs.db import get_db
 
 router = APIRouter()
 

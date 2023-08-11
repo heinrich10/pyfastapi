@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, deferred
 
-from ..libs.db import Base
-import app.models.country
+from pyfastapi.libs.db import Base
+
 
 class Person(Base):
     __tablename__ = "persons"

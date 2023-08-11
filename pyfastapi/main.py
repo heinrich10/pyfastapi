@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi_pagination import add_pagination
 
-from .controllers.person import router as person_router
-from .controllers.country import router as country_router
-from .controllers.continent import router as continent_router
+from pyfastapi.controllers.person import router as person_router
+from pyfastapi.controllers.country import router as country_router
+from pyfastapi.controllers.continent import router as continent_router
 
 app = FastAPI()
 

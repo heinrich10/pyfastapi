@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..repositories.person import get_person, get_persons
-from ..libs.db import get_db
+from pyfastapi.repositories.person import get_person, get_persons
+from pyfastapi.libs.db import get_db
 
 
 router = APIRouter()

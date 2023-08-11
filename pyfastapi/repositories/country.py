@@ -1,5 +1,5 @@
 
-from ..models.country import Country
+from pyfastapi.models.country import Country
 from sqlalchemy.orm import Session, joinedload
 from fastapi_pagination.ext.sqlalchemy import paginate
 

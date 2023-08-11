@@ -1,5 +1,5 @@
 
-from ..models.continent import Continent
+from pyfastapi.models.continent import Continent
 from sqlalchemy.orm import Session
 
 
