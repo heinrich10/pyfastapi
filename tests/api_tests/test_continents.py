@@ -1,9 +1,21 @@
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from pyfastapi.main import app
+from pyfastapi.libs.db import get_db
+from pyfastapi.models.continent import Continent
 
 
 client = TestClient(app)
+
+
+def test_countries_seed_data():
+    """
+    if seed data is modified, this will fail
+    """
+    db: Session = next(get_db())
+    count = db.query(Continent.code).count()
+    assert count == 7
 
 
 def test_get_continents():

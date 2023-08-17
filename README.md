@@ -19,5 +19,6 @@ sample backend using pyfastapi, sqlalchemy, and alembic
 3. refer to `alembic.ini` to change other configuration, it uses .env for the DB url
 
 ## Tests
-1. make sure `alembic` is run once 
-2. run 'pytest'
+1. make sure main dependencies are installed
+2. run `pip install -r requirements-test.txt`
+2. run `pytest`, take note that it uses `.env.test` for configuration
