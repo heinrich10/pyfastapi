@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pyfastapi"
+version = "0.1.0"
+description = ""
+authors = ["Heinrich Chan <guiltyrage10@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.109.0"}
+fastapi-pagination = "^0.12.14"
+sqlalchemy = "^2.0.25"
+alembic = "^1.13.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
