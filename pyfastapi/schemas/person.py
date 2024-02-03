@@ -1,12 +1,11 @@
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from pyfastapi.schemas.country import CountrySchema
 
 
 class PersonBaseSchema(BaseModel):
-    id: int
-    last_name: str
+    last_name: str = Field(default=None)
     first_name: str
 
     class Config:
@@ -14,8 +13,15 @@ class PersonBaseSchema(BaseModel):
 
 
 class PersonSchema(PersonBaseSchema):
+    id: int
     country: CountrySchema
 
 
 class PersonListSchema(PersonBaseSchema):
+    id: int
     country_code: str
+
+
+class PersonCreateSchema(PersonBaseSchema):
+    country_code: str
+

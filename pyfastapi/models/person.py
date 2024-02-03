@@ -8,7 +8,7 @@ class Person(Base):
     __tablename__ = "persons"
 
     id = Column(Integer, primary_key=True)
-    last_name = Column(String(100), nullable=False)
+    last_name = Column(String(100), nullable=True)
     first_name = Column(String(100), nullable=False)
     country_code = deferred(Column(String(2), ForeignKey("countries.code")))
 
