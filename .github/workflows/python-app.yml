@@ -40,3 +40,9 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
+        poetry run coverage xml coverage.xml
+    - name: Test coverage report
+      uses: orgoro/coverage@v3.1
+      with:
+          coverageFile: coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
