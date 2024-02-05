@@ -41,7 +41,7 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run coverage run --source=pyfastapi -m pytest
-        poetry run coverage xml coverage.xml
+        poetry run coverage xml -o coverage.xml
     - name: Test coverage report
       uses: orgoro/coverage@v3.1
       with:
