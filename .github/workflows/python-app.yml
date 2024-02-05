@@ -40,7 +40,7 @@ jobs:
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        poetry run pytest
+        poetry run coverage run --source=pyfastapi -m pytest
         poetry run coverage xml coverage.xml
     - name: Test coverage report
       uses: orgoro/coverage@v3.1
