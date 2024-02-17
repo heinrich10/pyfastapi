@@ -15,6 +15,7 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
+
 def upgrade() -> None:
     op.create_table(
         "countries",
@@ -35,7 +36,7 @@ def upgrade() -> None:
     op.create_table(
         "persons",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("last_name", sa.String(100), nullable=False),
+        sa.Column("last_name", sa.String(100), nullable=True),
         sa.Column("first_name", sa.String(100), nullable=False),
         sa.Column("country_code", sa.String(2), sa.ForeignKey("countries.code")),
     )

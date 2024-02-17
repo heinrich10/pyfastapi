@@ -16,5 +16,13 @@ def get_persons(db: Session):
     return paginate(db.query(Person))
 
 
-def create_person(db: Session, person: PersonSchema):
-    pass
+def create_new_person(db: Session, person: Person):
+    db.add(person)
+    db.commit()
+    db.refresh(person)
+    return person
+
+
+def update_or_create_person(db: Session, person: Person):
+    db.merge(person)
+    db.commit()

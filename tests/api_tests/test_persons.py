@@ -73,3 +73,52 @@ def test_get_one_person_not_found():
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
+
+
+def test_create_person():
+    first_name = "test1"
+    last_name = "test2"
+    country_code = "PH"
+    data = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "country_code": country_code,
+    }
+    response = client.post("/persons/", json=data)
+    body = response.json()
+    print("test", body)
+    assert body["first_name"] == first_name
+    assert body["last_name"] == last_name
+    assert body["country_code"] == country_code
+    assert body["id"] is not None
+
+    # should add 1 to total
+    db: Session = next(get_db())
+    count = db.query(Person.id).count()
+    assert count == 14
+
+
+def test_update_person():
+    first_name = "test1"
+    last_name = "test2"
+    country_code = "PH"
+    id_ = "1"
+    data = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "country_code": country_code
+    }
+    response1 = client.get(f"/persons/{id_}")
+    body1 = response1.json()
+    assert body1["first_name"] != first_name
+    assert body1["last_name"] != last_name
+    # TODO also check for country
+    # assert body1["country_code"] != country_code
+    response2 = client.put(f"/persons/{id_}", json=data)
+    assert response2.status_code == 204
+
+    db: Session = next(get_db())
+    body2 = db.query(Person).filter(Person.id == id_).first()
+    assert body2.first_name == first_name
+    assert body2.last_name == last_name
+    assert body2.country_code == country_code
