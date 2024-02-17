@@ -1,12 +1,14 @@
-
-from pyfastapi.models.country import Country
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import joinedload
 from fastapi_pagination.ext.sqlalchemy import paginate
 
+from .base import BaseRepository
+from pyfastapi.models.country import Country
 
-def get_country(db: Session, code: str):
-    return db.query(Country).options(joinedload(Country.continent)).filter(Country.code == code).first()
 
+class CountryRepository(BaseRepository):
 
-def get_countries(db: Session):
-    return paginate(db.query(Country))
+    def get_country(self, code: str):
+        return self.db.query(Country).options(joinedload(Country.continent)).filter(Country.code == code).first()
+
+    def get_countries(self):
+        return paginate(self.db.query(Country))
