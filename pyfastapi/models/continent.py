@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Relationship
 
-from pyfastapi.libs.db import Base
+from pyfastapi.libs import Base
 
 
 class Continent(Base):
@@ -18,6 +18,3 @@ class Continent(Base):
 
     def __repr__(self):
         return f"Country('{self.code}, {self.name}')"
-
-
-

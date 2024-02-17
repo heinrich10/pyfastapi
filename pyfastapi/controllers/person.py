@@ -3,9 +3,9 @@ import traceback
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi_pagination import LimitOffsetPage
 
-from pyfastapi.models.person import Person
-from pyfastapi.repositories.person import PersonRepository
-from pyfastapi.schemas.person import PersonListSchema, PersonCreateSchema
+from pyfastapi.models import Person
+from pyfastapi.repositories import PersonRepository
+from pyfastapi.schemas import PersonListSchema, PersonCreateSchema
 
 
 router = APIRouter()

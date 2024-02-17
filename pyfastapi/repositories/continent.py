@@ -1,4 +1,3 @@
-
 from .base import BaseRepository
 from pyfastapi.models.continent import Continent
 

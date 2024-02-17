@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-from pyfastapi.schemas.country import CountrySchema
+from pyfastapi.schemas import CountrySchema
 
 
 class PersonBaseSchema(BaseModel):
@@ -24,4 +24,3 @@ class PersonListSchema(PersonBaseSchema):
 
 class PersonCreateSchema(PersonBaseSchema):
     country_code: str
-

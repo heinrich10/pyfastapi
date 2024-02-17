@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from pyfastapi.repositories.continent import ContinentRepository
+from pyfastapi.repositories import ContinentRepository
 
 router = APIRouter()
 
