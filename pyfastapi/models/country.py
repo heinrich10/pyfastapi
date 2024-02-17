@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Relationship, deferred
-from pyfastapi.libs.db import Base
+
+from pyfastapi.libs import Base
 
 
 class Country(Base):
@@ -30,6 +31,3 @@ class Country(Base):
 
     def __repr__(self):
         return f"Country('{self.code}, {self.name}')"
-
-
-

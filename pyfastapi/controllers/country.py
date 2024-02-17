@@ -1,9 +1,8 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination import LimitOffsetPage
 
-from pyfastapi.repositories.country import CountryRepository
-from pyfastapi.schemas.country import CountryListSchema
+from pyfastapi.repositories import CountryRepository
+from pyfastapi.schemas import CountryListSchema
 
 router = APIRouter()
 

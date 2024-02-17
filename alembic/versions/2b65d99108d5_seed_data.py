@@ -6,7 +6,7 @@ Create Date: 2023-07-31 12:37:28.612328
 
 """
 from alembic import op
-import sqlalchemy as sa
+# import sqlalchemy as sa
 from sqlalchemy.sql import text
 
 
@@ -21,7 +21,8 @@ def upgrade() -> None:
     conn = op.get_bind()
     conn.execute(text(
         """
-            INSERT INTO `countries` (`code`, `name`, `phone`, `symbol`, `capital`, `currency`, `continent_code`, `alpha_3`) VALUES
+            INSERT INTO `countries`
+            (`code`, `name`, `phone`, `symbol`, `capital`, `currency`, `continent_code`, `alpha_3`) VALUES
                 ('AF', 'Afghanistan', 93, '؋', 'Kabul', 'AFN', 'AS', 'AFG'),
                 ('AX', 'Aland Islands', 358, '€', 'Mariehamn', 'EUR', 'EU', 'ALA'),
                 ('AL', 'Albania', 355, 'Lek', 'Tirana', 'ALL', 'EU', 'ALB'),
@@ -286,8 +287,7 @@ def upgrade() -> None:
                 ('EU', 'Europe'),
                 ('NA', 'North America'),
                 ('OC', 'Oceania'),
-                ('SA', 'South America')      
-            
+                ('SA', 'South America')
         """
     ))
 
@@ -309,6 +309,7 @@ def upgrade() -> None:
                 ('Harris', 'Ella', 'ZA')
         """
     ))
+
 
 def downgrade() -> None:
     op.execute(r"DELETE FROM `persons`")

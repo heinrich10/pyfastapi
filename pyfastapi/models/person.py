@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, deferred
 
-from pyfastapi.libs.db import Base
+from pyfastapi.libs import Base
 
 
 class Person(Base):
@@ -21,6 +21,3 @@ class Person(Base):
 
     def __repr__(self):
         return f"Person('{self.id}, {self.first_name}, {self.last_name}')"
-
-
-

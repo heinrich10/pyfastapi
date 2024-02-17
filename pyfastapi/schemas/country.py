@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel
 
-from pyfastapi.schemas.continent import ContinentSchema
+from pyfastapi.schemas import ContinentSchema
 
 
 class CountryBaseSchema(BaseModel):

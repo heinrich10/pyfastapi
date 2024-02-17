@@ -1,13 +1,12 @@
 """init persons and country db
 
 Revision ID: 602af0699ee9
-Revises: 
+Revises:
 Create Date: 2023-07-31 12:05:29.431998
 
 """
 from alembic import op
 import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
 revision = '602af0699ee9'
