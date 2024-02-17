@@ -8,8 +8,9 @@ class PersonBaseSchema(BaseModel):
     last_name: str = Field(default=None)
     first_name: str
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class PersonSchema(PersonBaseSchema):
