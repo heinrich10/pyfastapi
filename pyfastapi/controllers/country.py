@@ -13,7 +13,7 @@ def get_all_countries(repo: CountryRepository = Depends(CountryRepository)):
     return country
 
 
-@router.get("/{code}")
+@router.get("/{code}", response_model=CountryListSchema)
 def get_one_country(repo: CountryRepository = Depends(CountryRepository), code: str = None):
     country = repo.get_country(code)
     if not country:

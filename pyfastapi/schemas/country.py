@@ -13,8 +13,9 @@ class CountryBaseSchema(BaseModel):
     currency: str
     alpha_3: str
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class CountrySchema(CountryBaseSchema):
