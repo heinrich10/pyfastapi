@@ -1,11 +1,12 @@
 
+from .base import BaseRepository
 from pyfastapi.models.continent import Continent
-from sqlalchemy.orm import Session
 
 
-def get_continent(db: Session, code: str):
-    return db.query(Continent).filter(Continent.code == code).first()
+class ContinentRepository(BaseRepository):
 
+    def get_continent(self, code: str):
+        return self.db.query(Continent).filter(Continent.code == code).first()
 
-def get_continents(db: Session):
-    return db.query(Continent).all()
+    def get_continents(self):
+        return self.db.query(Continent).all()

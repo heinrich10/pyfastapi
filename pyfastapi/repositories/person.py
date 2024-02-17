@@ -1,28 +1,26 @@
-from pyfastapi.schemas.person import PersonSchema
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import joinedload
 from fastapi_pagination.ext.sqlalchemy import paginate
 
+from .base import BaseRepository
 from pyfastapi.models.person import Person
 from pyfastapi.models.country import Country
 
 
-def get_person(db: Session, id_: int):
-    return (db.query(Person)
-            .options(joinedload(Person.country).joinedload(Country.continent))
-            .filter(Person.id == id_).first())
+class PersonRepository(BaseRepository):
+    def get_person(self, id_: int):
+        return (self.db.query(Person)
+                .options(joinedload(Person.country).joinedload(Country.continent))
+                .filter(Person.id == id_).first())
 
+    def get_persons(self):
+        return paginate(self.db.query(Person))
 
-def get_persons(db: Session):
-    return paginate(db.query(Person))
+    def create_new_person(self, person: Person):
+        self.db.add(person)
+        self.db.commit()
+        self.db.refresh(person)
+        return person
 
-
-def create_new_person(db: Session, person: Person):
-    db.add(person)
-    db.commit()
-    db.refresh(person)
-    return person
-
-
-def update_or_create_person(db: Session, person: Person):
-    db.merge(person)
-    db.commit()
+    def update_or_create_person(self, person: Person):
+        self.db.merge(person)
+        self.db.commit()
