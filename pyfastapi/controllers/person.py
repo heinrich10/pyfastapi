@@ -27,7 +27,6 @@ def get_one_persons(repo: PersonRepository = Depends(PersonRepository), id_: int
 
 @router.post("/", response_model=PersonListSchema)
 def create_person(body: PersonCreateSchema, repo: PersonRepository = Depends(PersonRepository)):
-    print("this is the body", body)
     try:
         person = Person(
             first_name=body.first_name,
@@ -49,6 +48,5 @@ def update_person(id_: str, body: PersonCreateSchema, repo: PersonRepository = D
         country_code=body.country_code
     )
     person.id = int(id_)
-    print("updating", person)
     repo.update_or_create_person(person)
     return Response(status_code=204)

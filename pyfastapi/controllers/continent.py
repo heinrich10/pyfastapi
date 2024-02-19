@@ -11,7 +11,6 @@ router = APIRouter()
 @router.get("/", response_model=List[ContinentSchema])
 def get_all_continents(repo: ContinentRepository = Depends(ContinentRepository)):
     continents = repo.get_continents()
-    print("this is", continents)
     return continents
 
 
