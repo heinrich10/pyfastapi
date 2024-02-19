@@ -17,4 +17,4 @@ class Continent(Base):
         self.name = name
 
     def __repr__(self):
-        return f"Country('{self.code}, {self.name}')"
+        return f"Continent('{self.code}, {self.name}')"
