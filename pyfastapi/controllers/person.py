@@ -1,5 +1,5 @@
 import traceback
-
+from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi_pagination import LimitOffsetPage
 
@@ -12,13 +12,13 @@ router = APIRouter()
 
 
 @router.get("/", response_model=LimitOffsetPage[PersonListSchema])
-def get_all_persons(repo: PersonRepository = Depends(PersonRepository)):
+def get_all_persons(repo: Annotated[PersonRepository, Depends()]):
     person = repo.get_persons()
     return person
 
 
 @router.get("/{id_}")
-def get_one_persons(repo: PersonRepository = Depends(PersonRepository), id_: int = None):
+def get_one_persons(repo: Annotated[PersonRepository, Depends()], id_: int = None):
     person = repo.get_person(id_)
     if not person:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Person {id_} not found")
@@ -26,7 +26,7 @@ def get_one_persons(repo: PersonRepository = Depends(PersonRepository), id_: int
 
 
 @router.post("/", response_model=PersonListSchema)
-def create_person(body: PersonCreateSchema, repo: PersonRepository = Depends(PersonRepository)):
+def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]):
     try:
         person = Person(
             first_name=body.first_name,
@@ -41,7 +41,7 @@ def create_person(body: PersonCreateSchema, repo: PersonRepository = Depends(Per
 
 
 @router.put("/{id_}")
-def update_person(id_: str, body: PersonCreateSchema, repo: PersonRepository = Depends(PersonRepository)):
+def update_person(id_: str, body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]):
     person = Person(
         first_name=body.first_name,
         last_name=body.last_name,
