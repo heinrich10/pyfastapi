@@ -20,9 +20,9 @@ def init_db():
     this is equivalent to "alembic upgrade head" then run "alembic downgrade base" after 1 test is done
     runs every test to make sure we have a clean set of data
     """
-    from pyfastapi.config import config as app_config
+    from pyfastapi.config import Config as AppConfig
     config = Config()
-    config.set_main_option("sqlalchemy.url", app_config["DB_HOST"])
+    config.set_main_option("sqlalchemy.url", AppConfig.DB_HOST)
     config.set_main_option("script_location", "alembic")
     command.upgrade(config, 'head')
     yield None
