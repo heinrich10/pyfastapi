@@ -19,6 +19,11 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_config() -> Settings:
+    """
+    Get the configuration settings
+    This will check if it is running on pytest.
+    If it is, it will use the .env.test file, otherwise it will use the .env file
+    """
     file = ".env.test" if "pytest" in sys.modules else ".env"
     print('input file', file)
     return Settings(_env_file=file)

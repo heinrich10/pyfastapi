@@ -58,7 +58,7 @@ def test_persons_limit_10() -> None:
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit)
     assert len(body.items) == int(limit)
-    person: PersonListSchema = body.items[0]
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
     assert person.id == FIRST_PERSON
 
 
@@ -68,13 +68,14 @@ def test_persons_limit_5_offset_10(add_50_records: None) -> None:
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit, offset=offset)
     assert len(body.items) == int(limit)
-    person = body.items[0]
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
     assert person.id != FIRST_PERSON
 
 
 def test_get_one_person() -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
+    print("test_get_one_person", response.json())
     body: PersonSchema = PersonSchema(**response.json())
     country = body.country
     continent = country.continent

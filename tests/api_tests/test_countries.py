@@ -34,7 +34,7 @@ def test_get_countries_limit_10() -> None:
     body: LimitOffsetPage[CountryListSchema]
     response, body = get_paginated("/countries", client, limit=limit)
     assert len(body.items) == int(limit)
-    country = body.items[0]
+    country: CountryListSchema = CountryListSchema.model_validate(body.items[0])
     assert country.code == FIRST_COUNTRY
 
 
@@ -44,7 +44,7 @@ def test_get_countries_limit_5_offset_10() -> None:
     body: LimitOffsetPage[CountryListSchema]
     response, body = get_paginated("/countries", client, limit=limit, offset=offset)
     assert len(body.items) == int(limit)
-    country = body.items[0]
+    country: CountryListSchema = CountryListSchema.model_validate(body.items[0])
     assert country.code != FIRST_COUNTRY
 
 

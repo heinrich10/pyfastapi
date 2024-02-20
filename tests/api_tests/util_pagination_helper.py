@@ -2,7 +2,6 @@ from typing import Tuple, TypeVar
 
 from fastapi.testclient import TestClient
 from fastapi_pagination import LimitOffsetPage
-# from fastapi import Response
 from httpx import Response
 
 T = TypeVar("T")

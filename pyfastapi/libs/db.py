@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from pyfastapi.config import get_config
 
 SQLALCHEMY_DATABASE_URL = get_config().DB_HOST
-print("db", SQLALCHEMY_DATABASE_URL)
+
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )

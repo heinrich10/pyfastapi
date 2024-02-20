@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from pyfastapi.schemas import ContinentSchema
