@@ -1,10 +1,10 @@
 from fastapi_pagination import LimitOffsetPage
-from sqlalchemy.orm import joinedload
 from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 
-from .base import BaseRepository
 from pyfastapi.models.country import Country
+from .base import BaseRepository
 
 
 class CountryRepository(BaseRepository):

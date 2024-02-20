@@ -1,11 +1,11 @@
-from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import select
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import select
 
-from .base import BaseRepository
-from pyfastapi.models.person import Person
 from pyfastapi.models.country import Country
+from pyfastapi.models.person import Person
+from .base import BaseRepository
 
 
 class PersonRepository(BaseRepository):

@@ -1,7 +1,9 @@
 from typing import List, Iterator
-from pytest import fixture
-from alembic.config import Config
+
 from alembic import command
+from alembic.config import Config
+from pytest import fixture
+
 from pyfastapi.config import get_config
 
 pytest_plugins = ["faker"]

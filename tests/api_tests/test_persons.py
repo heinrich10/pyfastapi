@@ -1,19 +1,18 @@
-from typing import Sequence, List
+from typing import Sequence
 
+from faker import Faker
+from fastapi.testclient import TestClient
 from fastapi_pagination import LimitOffsetPage
 from pytest import fixture
-from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
-from faker import Faker
 
-from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
-from pyfastapi.models import Person, Country
-from pyfastapi.schemas import PersonListSchema, CountryListSchema
+from pyfastapi.main import app
+from pyfastapi.models import Person
+from pyfastapi.schemas import PersonListSchema
 from pyfastapi.schemas.person import PersonSchema
 from tests.api_tests.util_pagination_helper import get_paginated
-
 
 DEFAULT_LIMIT = 50
 FIRST_PERSON = 1

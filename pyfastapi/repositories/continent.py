@@ -1,9 +1,8 @@
-from typing import List
 from sqlalchemy import ScalarResult
 from sqlalchemy.sql import select
 
-from .base import BaseRepository
 from pyfastapi.models.continent import Continent
+from .base import BaseRepository
 
 
 class ContinentRepository(BaseRepository):

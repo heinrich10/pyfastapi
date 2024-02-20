@@ -1,11 +1,10 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
+from pyfastapi.main import app
 from pyfastapi.models import Continent
 from pyfastapi.schemas import ContinentSchema
-
 
 client = TestClient(app)
 

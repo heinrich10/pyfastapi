@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Annotated
+
 from fastapi import Depends
 from sqlalchemy.orm import Session
 

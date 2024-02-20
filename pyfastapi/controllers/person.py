@@ -1,12 +1,12 @@
 import traceback
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status, Path
 from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Person
 from pyfastapi.repositories import PersonRepository
 from pyfastapi.schemas import PersonListSchema, PersonCreateSchema
-
 
 router = APIRouter()
 

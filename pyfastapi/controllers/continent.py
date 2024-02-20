@@ -1,6 +1,7 @@
 from typing import List, Annotated
-from sqlalchemy import ScalarResult
+
 from fastapi import APIRouter, Depends, HTTPException, status, Path
+from sqlalchemy import ScalarResult
 
 from pyfastapi.models import Continent
 from pyfastapi.repositories import ContinentRepository

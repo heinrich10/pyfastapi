@@ -2,8 +2,8 @@ from fastapi.testclient import TestClient
 from fastapi_pagination import LimitOffsetPage
 from sqlalchemy.orm import Session
 
-from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
+from pyfastapi.main import app
 from pyfastapi.models import Country
 from pyfastapi.schemas import CountryListSchema
 from tests.api_tests.util_pagination_helper import get_paginated
