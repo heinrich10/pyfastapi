@@ -5,13 +5,12 @@ from fastapi.testclient import TestClient
 from fastapi_pagination import LimitOffsetPage
 from pytest import fixture
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, func
 
 from pyfastapi.libs.db import get_db
 from pyfastapi.main import app
 from pyfastapi.models import Person
-from pyfastapi.schemas import PersonListSchema
-from pyfastapi.schemas.person import PersonSchema
+from pyfastapi.schemas import PersonListSchema, PersonSchema, CountrySchema
 from tests.api_tests.util_pagination_helper import get_paginated
 
 DEFAULT_LIMIT = 50
@@ -41,7 +40,8 @@ def test_persons_seed_data() -> None:
     if seed data is modified, this will fail
     """
     db: Session = next(get_db())
-    count = db.query(Person.id).count()
+    stmt = select(func.count()).select_from(Person)
+    count = db.execute(stmt).scalar_one()
     assert count == 13
 
 
@@ -75,7 +75,6 @@ def test_persons_limit_5_offset_10(add_50_records: None) -> None:
 def test_get_one_person() -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
-    print("test_get_one_person", response.json())
     body: PersonSchema = PersonSchema(**response.json())
     country = body.country
     continent = country.continent
@@ -110,7 +109,8 @@ def test_create_person() -> None:
 
     # should add 1 to total
     db: Session = next(get_db())
-    count: int = db.query(Person.id).count()
+    stmt = select(func.count()).select_from(Person)
+    count: int = db.execute(stmt).scalar_one()
     assert count == 14
 
 
@@ -125,16 +125,18 @@ def test_update_person() -> None:
         "country_code": country_code
     }
     response1 = client.get(f"/persons/{id_}")
-    body1 = response1.json()
-    assert body1["first_name"] != first_name
-    assert body1["last_name"] != last_name
-    # TODO also check for country
-    # assert body1["country_code"] != country_code
+    current_person: PersonSchema = PersonSchema(**response1.json())
+    assert current_person.first_name != first_name
+    assert current_person.last_name != last_name
+    current_country: CountrySchema = current_person.country
+    assert current_country.code != country_code
+
     response2 = client.put(f"/persons/{id_}", json=data)
     assert response2.status_code == 204
 
     db: Session = next(get_db())
-    body2: Person = db.execute(select(Person).where(Person.id == id_)).scalar_one()
-    assert body2.first_name == first_name
-    assert body2.last_name == last_name
-    assert body2.country_code == country_code
+    stmt = select(Person).where(Person.id == id_)
+    updated_person: Person = db.execute(stmt).scalar_one()
+    assert updated_person.first_name == first_name
+    assert updated_person.last_name == last_name
+    assert updated_person.country_code == country_code

@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from fastapi_pagination import LimitOffsetPage
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import select, func
 
 from pyfastapi.libs.db import get_db
 from pyfastapi.main import app
@@ -19,7 +20,8 @@ def test_countries_seed_data() -> None:
     if seed data is modified, this will fail
     """
     db: Session = next(get_db())
-    count = db.query(Country.code).count()
+    stmt = select(func.count()).select_from(Country)
+    count = db.execute(stmt).scalar_one()
     assert count == 252
 
 
