@@ -16,7 +16,6 @@ client = TestClient(app)
 
 @fixture(scope="function")
 def add_50_records(faker):
-    print('add_50_records')
     db: Session = next(get_db())
     person_list = []
     for i in range(50):
@@ -37,7 +36,6 @@ def test_persons_seed_data():
 
 def test_persons_default_pagination(add_50_records):
     response, body = get_paginated("/persons", client)
-    print(body)
     assert len(body["items"]) == DEFAULT_LIMIT
 
 
@@ -86,7 +84,6 @@ def test_create_person():
     }
     response = client.post("/persons/", json=data)
     body = response.json()
-    print("test", body)
     assert body["first_name"] == first_name
     assert body["last_name"] == last_name
     assert body["country_code"] == country_code
