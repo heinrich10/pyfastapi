@@ -1,14 +1,17 @@
-from typing import Sized, Sequence, Collection, List
+from typing import Sequence, List
 
 from fastapi_pagination import LimitOffsetPage
 from pytest import fixture
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import select
 from faker import Faker
 
 from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
-from pyfastapi.models.person import Person
+from pyfastapi.models import Person, Country
+from pyfastapi.schemas import PersonListSchema, CountryListSchema
+from pyfastapi.schemas.person import PersonSchema
 from tests.api_tests.util_pagination_helper import get_paginated
 
 
@@ -46,37 +49,40 @@ def test_persons_seed_data() -> None:
 def test_persons_default_pagination(add_50_records: None) -> None:
     body: LimitOffsetPage[Person]
     response, body = get_paginated("/persons", client)
-    items: List[Person] = body["items"]
+    items: Sequence[Person] = body.items
     body_length = len(items)
     assert body_length == DEFAULT_LIMIT
 
 
 def test_persons_limit_10() -> None:
     limit = "10"
+    body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit)
-    assert len(body["items"]) == int(limit)
-    assert body["items"][0]["id"] == FIRST_PERSON
+    assert len(body.items) == int(limit)
+    person: PersonListSchema = body.items[0]
+    assert person.id == FIRST_PERSON
 
 
 def test_persons_limit_5_offset_10(add_50_records: None) -> None:
     limit = "5"
     offset = "10"
+    body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit, offset=offset)
-    assert len(body["items"]) == int(limit)
-    assert body["items"][0]["id"] != FIRST_PERSON
+    assert len(body.items) == int(limit)
+    person = body.items[0]
+    assert person.id != FIRST_PERSON
 
 
 def test_get_one_person() -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
-    body = response.json()
-    print("this is body", body)
-    country = body["country"]
-    continent = country["continent"]
+    body: PersonSchema = PersonSchema(**response.json())
+    country = body.country
+    continent = country.continent
     assert response.status_code == 200
-    assert body["id"] == person_id
-    assert all(k in country for k in ["code", "name", "phone", "symbol", "capital", "currency", "alpha_3"])
-    assert all(k in continent for k in ["code", "name"])
+    assert body.id == person_id
+    assert all(hasattr(country, k) for k in ["code", "name", "phone", "symbol", "capital", "currency", "alpha_3"])
+    assert all(hasattr(continent, k) for k in ["code", "name"])
 
 
 def test_get_one_person_not_found() -> None:
@@ -96,11 +102,11 @@ def test_create_person() -> None:
         "country_code": country_code,
     }
     response = client.post("/persons/", json=data)
-    body = response.json()
-    assert body["first_name"] == first_name
-    assert body["last_name"] == last_name
-    assert body["country_code"] == country_code
-    assert body["id"] is not None
+    body: PersonListSchema = PersonListSchema(**response.json())
+    assert body.first_name == first_name
+    assert body.last_name == last_name
+    assert body.country_code == country_code
+    assert body.id is not None
 
     # should add 1 to total
     db: Session = next(get_db())
@@ -128,7 +134,7 @@ def test_update_person() -> None:
     assert response2.status_code == 204
 
     db: Session = next(get_db())
-    body2: Person = db.query(Person).filter(Person.id == id_).first()
+    body2: Person = db.execute(select(Person).where(Person.id == id_)).scalar_one()
     assert body2.first_name == first_name
     assert body2.last_name == last_name
     assert body2.country_code == country_code

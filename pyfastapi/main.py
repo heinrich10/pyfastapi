@@ -1,3 +1,5 @@
+from typing import Coroutine, Any
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -9,12 +11,16 @@ from pyfastapi.controllers import person_router, country_router, continent_route
 app = FastAPI()
 
 
+async def health() -> JSONResponse:
+    return JSONResponse({"status": "ok"})
+
+
 app.include_router(person_router, prefix="/persons")
 app.include_router(country_router, prefix="/countries")
 app.include_router(continent_router, prefix="/continents")
 app.add_api_route(
     "/health",
-    endpoint=lambda: JSONResponse(content=jsonable_encoder({"status": "ok"})),
+    endpoint=health,
     methods=["GET"]
 )
 

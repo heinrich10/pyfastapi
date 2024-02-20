@@ -19,7 +19,7 @@ class CountryBaseSchema(BaseModel):
 
 
 class CountrySchema(CountryBaseSchema):
-    continents: ContinentSchema
+    continent: ContinentSchema
 
 
 class CountryListSchema(CountryBaseSchema):

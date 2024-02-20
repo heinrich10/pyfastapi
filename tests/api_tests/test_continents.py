@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
-from pyfastapi.models.continent import Continent
+from pyfastapi.models import Continent
+from pyfastapi.schemas import ContinentSchema
 
 
 client = TestClient(app)
@@ -28,9 +29,9 @@ def test_get_continents() -> None:
 def test_get_one_continent() -> None:
     continent = "AF"
     response = client.get(f"/continents/{continent}")
-    body = response.json()
+    body: ContinentSchema = ContinentSchema(**response.json())
     assert response.status_code == 200
-    assert body["code"] == continent
+    assert body.code == continent
 
 
 def test_get_one_continent_not_found() -> None:

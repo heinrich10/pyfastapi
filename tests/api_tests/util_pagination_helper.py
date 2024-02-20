@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Any, TypeVar, Iterable, cast
+from typing import Tuple, Dict, Any, TypeVar, Iterable, cast, Sequence
 
 from fastapi_pagination import LimitOffsetPage
 # from fastapi import Response
@@ -15,10 +15,7 @@ def get_paginated(path: str, client: TestClient, **kwargs: str) -> Tuple[Respons
         url=path,
         params=params
     )
-    body: LimitOffsetPage[T] = response.json()
-    # print("this is body", body)
+    body: LimitOffsetPage[T] = LimitOffsetPage(**response.json())
     assert response.status_code == 200
-    for k in ["items", "total", "limit", "offset"]:
-        assert body[k] is not None
-    # assert all(k in body for k in cast(Iterable[str], ["items", "total", "limit", "offset"]))
+    assert all(hasattr(body, k) for k in ["items", "total", "limit", "offset"])
     return response, body
