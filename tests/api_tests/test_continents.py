@@ -9,7 +9,7 @@ from pyfastapi.models.continent import Continent
 client = TestClient(app)
 
 
-def test_countries_seed_data():
+def test_countries_seed_data() -> None:
     """
     if seed data is modified, this will fail
     """
@@ -18,14 +18,14 @@ def test_countries_seed_data():
     assert count == 7
 
 
-def test_get_continents():
+def test_get_continents() -> None:
     response = client.get("/continents")
     body = response.json()
     assert response.status_code == 200
     assert len(body) == 7
 
 
-def test_get_one_continent():
+def test_get_one_continent() -> None:
     continent = "AF"
     response = client.get(f"/continents/{continent}")
     body = response.json()
@@ -33,7 +33,7 @@ def test_get_one_continent():
     assert body["code"] == continent
 
 
-def test_get_one_continent_not_found():
+def test_get_one_continent_not_found() -> None:
     continent = "ZZ"
     response = client.get(f"/continents/{continent}")
     assert response.status_code == 404

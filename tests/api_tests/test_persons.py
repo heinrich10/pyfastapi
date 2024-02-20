@@ -1,6 +1,10 @@
+from typing import Sized, Sequence, Collection, List
+
+from fastapi_pagination import LimitOffsetPage
 from pytest import fixture
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from faker import Faker
 
 from pyfastapi.main import app
 from pyfastapi.libs.db import get_db
@@ -15,17 +19,22 @@ client = TestClient(app)
 
 
 @fixture(scope="function")
-def add_50_records(faker):
+def add_50_records(faker: Faker) -> None:
     db: Session = next(get_db())
     person_list = []
     for i in range(50):
         name = faker.name().split()
-        person_list.append(Person(name[1], name[0], "HK"))
+        person = Person(
+            first_name=name[1],
+            last_name=name[0],
+            country_code="HK"
+        )
+        person_list.append(person)
     db.bulk_save_objects(person_list)
     db.commit()
 
 
-def test_persons_seed_data():
+def test_persons_seed_data() -> None:
     """
     if seed data is modified, this will fail
     """
@@ -34,19 +43,22 @@ def test_persons_seed_data():
     assert count == 13
 
 
-def test_persons_default_pagination(add_50_records):
+def test_persons_default_pagination(add_50_records: None) -> None:
+    body: LimitOffsetPage[Person]
     response, body = get_paginated("/persons", client)
-    assert len(body["items"]) == DEFAULT_LIMIT
+    items: List[Person] = body["items"]
+    body_length = len(items)
+    assert body_length == DEFAULT_LIMIT
 
 
-def test_persons_limit_10():
+def test_persons_limit_10() -> None:
     limit = "10"
     response, body = get_paginated("/persons", client, limit=limit)
     assert len(body["items"]) == int(limit)
     assert body["items"][0]["id"] == FIRST_PERSON
 
 
-def test_persons_limit_5_offset_10(add_50_records):
+def test_persons_limit_5_offset_10(add_50_records: None) -> None:
     limit = "5"
     offset = "10"
     response, body = get_paginated("/persons", client, limit=limit, offset=offset)
@@ -54,10 +66,11 @@ def test_persons_limit_5_offset_10(add_50_records):
     assert body["items"][0]["id"] != FIRST_PERSON
 
 
-def test_get_one_person():
+def test_get_one_person() -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
     body = response.json()
+    print("this is body", body)
     country = body["country"]
     continent = country["continent"]
     assert response.status_code == 200
@@ -66,14 +79,14 @@ def test_get_one_person():
     assert all(k in continent for k in ["code", "name"])
 
 
-def test_get_one_person_not_found():
+def test_get_one_person_not_found() -> None:
     person_id = 0
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
 
 
-def test_create_person():
+def test_create_person() -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -91,11 +104,11 @@ def test_create_person():
 
     # should add 1 to total
     db: Session = next(get_db())
-    count = db.query(Person.id).count()
+    count: int = db.query(Person.id).count()
     assert count == 14
 
 
-def test_update_person():
+def test_update_person() -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -115,7 +128,7 @@ def test_update_person():
     assert response2.status_code == 204
 
     db: Session = next(get_db())
-    body2 = db.query(Person).filter(Person.id == id_).first()
+    body2: Person = db.query(Person).filter(Person.id == id_).first()
     assert body2.first_name == first_name
     assert body2.last_name == last_name
     assert body2.country_code == country_code

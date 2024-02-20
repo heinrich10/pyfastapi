@@ -12,7 +12,7 @@ FIRST_COUNTRY = "AF"
 client = TestClient(app)
 
 
-def test_countries_seed_data():
+def test_countries_seed_data() -> None:
     """
     if seed data is modified, this will fail
     """
@@ -21,19 +21,19 @@ def test_countries_seed_data():
     assert count == 252
 
 
-def test_get_countries_default_limit():
+def test_get_countries_default_limit() -> None:
     response, body = get_paginated("/countries", client)
     assert len(body['items']) == DEFAULT_LIMIT
 
 
-def test_get_countries_limit_10():
+def test_get_countries_limit_10() -> None:
     limit = "10"
     response, body = get_paginated("/countries", client, limit=limit)
     assert len(body["items"]) == int(limit)
     assert body["items"][0]["code"] == FIRST_COUNTRY
 
 
-def test_get_countries_limit_5_offset_10():
+def test_get_countries_limit_5_offset_10() -> None:
     limit = "5"
     offset = "10"
     response, body = get_paginated("/countries", client, limit=limit, offset=offset)
@@ -41,7 +41,7 @@ def test_get_countries_limit_5_offset_10():
     assert body["items"][0]["code"] != FIRST_COUNTRY
 
 
-def test_get_one_country():
+def test_get_one_country() -> None:
     country = "HK"
     response = client.get(f"/countries/{country}")
     body = response.json()
@@ -49,7 +49,7 @@ def test_get_one_country():
     assert body["code"] == country
 
 
-def test_get_one_country_not_found():
+def test_get_one_country_not_found() -> None:
     country = "ZZ"
     response = client.get(f"/countries/{country}")
     assert response.status_code == 404
