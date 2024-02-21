@@ -3,7 +3,7 @@ from typing import Iterator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from pyfastapi.config import get_config
+from pyfastapi.utils.config import get_config
 
 SQLALCHEMY_DATABASE_URL = get_config().DB_HOST
 

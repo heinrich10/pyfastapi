@@ -1,7 +1,10 @@
 import sys
 from functools import lru_cache
+from logging import getLogger
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -12,7 +15,7 @@ class Settings(BaseSettings):
     DB_HOST: str = "sqlite:///./sql_app.db"
     HOST: str = "0.0.0.0"
     PORT: int = 5000
-    LOG_LEVEL: str = "debug"
+    LOG_LEVEL: str = "info"
 
     model_config = SettingsConfigDict()
 
@@ -25,7 +28,7 @@ def get_config() -> Settings:
     If it is, it will use the .env.test file, otherwise it will use the .env file
     """
     file = ".env.test" if "pytest" in sys.modules else ".env"
-    print('input file', file)
+    logger.info(f"logger input file {file}")
     return Settings(_env_file=file)
 
 

@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from pyfastapi.config import get_config
+from pyfastapi.utils.config import get_config
 
 AppConfig = get_config()
 
