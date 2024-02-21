@@ -1,23 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, deferred
+from typing import TYPE_CHECKING
 
-from pyfastapi.libs import Base
+from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.orm import relationship, deferred, mapped_column, Mapped
+
+from .base import Base
+
+if TYPE_CHECKING:
+    from .country import Country
 
 
 class Person(Base):
     __tablename__ = "persons"
 
-    id = Column(Integer, primary_key=True)
-    last_name = Column(String(100), nullable=True)
-    first_name = Column(String(100), nullable=False)
-    country_code = deferred(Column(String(2), ForeignKey("countries.code")))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    last_name: Mapped[str] = mapped_column(String(100), nullable=True)
+    first_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    country_code: Mapped[str] = deferred(mapped_column(String(2), ForeignKey("countries.code")))
 
-    country = relationship("Country", back_populates="person")
+    country: Mapped["Country"] = relationship(back_populates="person")
 
-    def __init__(self, last_name, first_name, country_code):
-        self.last_name = last_name
-        self.first_name = first_name
-        self.country_code = country_code
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Person('{self.id}, {self.first_name}, {self.last_name}')"

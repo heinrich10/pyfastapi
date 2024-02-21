@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from pyfastapi.schemas import ContinentSchema
@@ -19,7 +18,7 @@ class CountryBaseSchema(BaseModel):
 
 
 class CountrySchema(CountryBaseSchema):
-    continents: ContinentSchema
+    continent: ContinentSchema
 
 
 class CountryListSchema(CountryBaseSchema):
