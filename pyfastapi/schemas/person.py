@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 
 from pyfastapi.schemas import CountrySchema

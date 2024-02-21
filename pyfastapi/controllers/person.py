@@ -1,24 +1,27 @@
 import traceback
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Path
 from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Person
 from pyfastapi.repositories import PersonRepository
-from pyfastapi.schemas import PersonListSchema, PersonCreateSchema
-
+from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema
 
 router = APIRouter()
 
 
 @router.get("/", response_model=LimitOffsetPage[PersonListSchema])
-def get_all_persons(repo: Annotated[PersonRepository, Depends()]):
+def get_all_persons(repo: Annotated[PersonRepository, Depends()]) -> LimitOffsetPage[Person]:
     person = repo.get_persons()
     return person
 
 
-@router.get("/{id_}")
-def get_one_persons(repo: Annotated[PersonRepository, Depends()], id_: int = None):
+@router.get("/{id_}", response_model=PersonSchema)
+def get_one_persons(
+    repo: Annotated[PersonRepository, Depends()],
+    id_: Annotated[int, Path(title="person id")]
+) -> Person:
     person = repo.get_person(id_)
     if not person:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Person {id_} not found")
@@ -26,7 +29,7 @@ def get_one_persons(repo: Annotated[PersonRepository, Depends()], id_: int = Non
 
 
 @router.post("/", response_model=PersonListSchema)
-def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]):
+def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]) -> Person:
     try:
         person = Person(
             first_name=body.first_name,
@@ -41,7 +44,11 @@ def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, De
 
 
 @router.put("/{id_}")
-def update_person(id_: str, body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]):
+def update_person(
+    id_: Annotated[int, Path(title="person id")],
+    body: PersonCreateSchema,
+    repo: Annotated[PersonRepository, Depends()]
+) -> Response:
     person = Person(
         first_name=body.first_name,
         last_name=body.last_name,
