@@ -8,7 +8,7 @@ LOG_LEVEL = logging.INFO
 # LOG_LEVEL = logging.DEBUG
 
 
-def init_logger():
+def init_logger() -> None:
     """
     Initialize logger, has to be run first above all
     """

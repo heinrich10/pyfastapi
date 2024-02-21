@@ -1,6 +1,6 @@
 from pyfastapi.utils import init_logger
 # instantiate logger before anything else
-init_logger()
+init_logger()  # noqa: E402
 
 from .main import app
 
