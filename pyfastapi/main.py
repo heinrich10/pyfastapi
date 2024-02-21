@@ -4,6 +4,7 @@ from fastapi_pagination import add_pagination
 
 from pyfastapi.controllers import person_router, country_router, continent_router
 
+
 app = FastAPI()
 
 

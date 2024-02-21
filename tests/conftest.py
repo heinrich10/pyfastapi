@@ -4,7 +4,7 @@ from alembic import command
 from alembic.config import Config
 from pytest import fixture
 
-from pyfastapi.config import get_config
+from pyfastapi.utils.config import get_config
 
 pytest_plugins = ["faker"]
 AppConfig = get_config()

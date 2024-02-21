@@ -1,5 +1,6 @@
 import traceback
 from typing import Annotated
+from logging import getLogger
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status, Path
 from fastapi_pagination import LimitOffsetPage
@@ -9,6 +10,7 @@ from pyfastapi.repositories import PersonRepository
 from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema
 
 router = APIRouter()
+logger = getLogger(__name__)
 
 
 @router.get("/", response_model=LimitOffsetPage[PersonListSchema])
@@ -30,6 +32,7 @@ def get_one_persons(
 
 @router.post("/", response_model=PersonListSchema)
 def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]) -> Person:
+    logger.debug(f"body {body}")
     try:
         person = Person(
             first_name=body.first_name,
@@ -49,6 +52,7 @@ def update_person(
     body: PersonCreateSchema,
     repo: Annotated[PersonRepository, Depends()]
 ) -> Response:
+    logger.debug(f"body {body}")
     person = Person(
         first_name=body.first_name,
         last_name=body.last_name,
