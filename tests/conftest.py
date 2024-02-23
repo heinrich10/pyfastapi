@@ -19,17 +19,17 @@ def init_db() -> Iterator[None]:
     config = Config()
     config.set_main_option("sqlalchemy.url", AppConfig.DB_HOST)
     config.set_main_option("script_location", "alembic")
-    command.upgrade(config, 'head')
+    command.upgrade(config, "head")
     yield None
-    command.downgrade(config, 'base')
+    command.downgrade(config, "base")
 
 
 # faker fixtures below
-@fixture(scope='session', autouse=True)
+@fixture(scope="session", autouse=True)
 def faker_session_locale() -> List[str]:
-    return ['en_US']
+    return ["en_US"]
 
 
-@fixture(scope='session', autouse=True)
+@fixture(scope="session", autouse=True)
 def faker_seed() -> int:
     return 12345
