@@ -36,5 +36,4 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY . .
 
-# copy and run program
 CMD [ "python", "-m", "run" ]
