@@ -1,4 +1,4 @@
-FROM python:3.12.1-slim-bullseye
+FROM python:3.12.1-bookworm as builder
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -11,7 +11,8 @@ ENV PYTHONFAULTHANDLER=1 \
     # poetry:
     POETRY_VERSION=1.7.1 \
     POETRY_NO_INTERACTION=1 \
-    POETRY_CACHE_DIR='/var/cache/pypoetry' \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
     PATH="$PATH:/root/.local/bin"
 
 WORKDIR /app
@@ -22,8 +23,18 @@ RUN pipx install "poetry==$POETRY_VERSION"
 RUN pipx ensurepath
 
 # install dependencies
-COPY ./ ./
+COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi
 
+# next stage
+FROM python:3.12.1-slim-bookworm as runtime
+
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
+
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+
+COPY . .
+
 # copy and run program
-CMD [ "poetry", "run", "python", "-m", "run" ]
+CMD [ "python", "-m", "run" ]
