@@ -12,7 +12,7 @@ def init_logger() -> None:
     """
     Initialize logger, has to be run first above all
     """
-    formatter = ColourizedFormatter(fmt='%(levelprefix)s [%(asctime)s] %(name)s - %(message)s', use_colors=True)
+    formatter = ColourizedFormatter(fmt="%(levelprefix)s [%(asctime)s] %(name)s - %(message)s", use_colors=True)
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(formatter)
     logging.basicConfig(
@@ -26,7 +26,7 @@ def configure_log(uvicorn_log_config: Dict[str, Any]) -> Dict[str, Any]:
     Configure log of uvicorn
     Get the default uvicorn_log_config and then override the formatter
     """
-    formatters = uvicorn_log_config['formatters']
-    formatters['default']['fmt'] = '%(levelprefix)s [%(asctime)s] %(message)s'
-    formatters['access']['fmt'] = '%(levelprefix)s [%(asctime)s] %(client_addr)s - "%(request_line)s" %(status_code)s'
+    formatters = uvicorn_log_config["formatters"]
+    formatters["default"]["fmt"] = "%(levelprefix)s [%(asctime)s] %(message)s"
+    formatters["access"]["fmt"] = "%(levelprefix)s [%(asctime)s] %(client_addr)s - '%(request_line)s' %(status_code)s"
     return uvicorn_log_config
