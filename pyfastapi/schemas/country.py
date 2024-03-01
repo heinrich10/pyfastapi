@@ -23,3 +23,12 @@ class CountrySchema(CountryBaseSchema):
 
 class CountryListSchema(CountryBaseSchema):
     continent_code: str
+
+
+class QueryCountrySchema(BaseModel):
+    name: str | None = None
+    phone: int | None = None
+    symbol: str | None = None
+    capital: str | None = None
+    currency: str | None = None
+    alpha_3: str | None = None

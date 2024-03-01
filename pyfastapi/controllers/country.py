@@ -1,18 +1,22 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Path
+from fastapi import APIRouter, Depends, HTTPException, status, Path, Query
 from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Country
 from pyfastapi.repositories import CountryRepository
-from pyfastapi.schemas import CountryListSchema
+from pyfastapi.schemas import CountryListSchema, QueryCountrySchema
 
 router = APIRouter()
 
 
 @router.get("/", response_model=LimitOffsetPage[CountryListSchema])
-def get_all_countries(repo: Annotated[CountryRepository, Depends()]) -> LimitOffsetPage[Country]:
-    country = repo.get_countries()
+def get_all_countries(
+        q: Annotated[QueryCountrySchema, Depends()],
+        repo: Annotated[CountryRepository, Depends()]
+) -> LimitOffsetPage[Country]:
+    print("this is q", q)
+    country = repo.get_countries(q)
     return country
 
 

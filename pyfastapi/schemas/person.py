@@ -24,3 +24,10 @@ class PersonListSchema(PersonBaseSchema):
 
 class PersonCreateSchema(PersonBaseSchema):
     country_code: str
+
+
+class QueryPersonSchema(BaseModel):
+    last_name: str | None = None
+    first_name: str | None = None
+    country_code: str | None = None
+

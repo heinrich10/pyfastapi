@@ -4,6 +4,7 @@ from sqlalchemy.sql import select
 
 from pyfastapi.models import Person, Country
 from .base import BaseRepository
+from pyfastapi.schemas import QueryPersonSchema
 
 
 class PersonRepository(BaseRepository):
@@ -11,8 +12,17 @@ class PersonRepository(BaseRepository):
         stmt = select(Person, Country).join(Country, Person.country_code == Country.code).where(Person.id == id_)
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def get_persons(self) -> LimitOffsetPage[Person]:
-        person_list: LimitOffsetPage[Person] = paginate(self.db, select(Person))
+    def get_persons(self, q: QueryPersonSchema) -> LimitOffsetPage[Person]:
+        print(q)
+        stmt = select(Person)
+        for attr, value in q:
+            if value is not None:
+                if attr == "first_name" or attr == "last_name":
+                    stmt = stmt.where(getattr(Person, attr).ilike(f"%{value}%"))
+                else:
+                    stmt = stmt.where(getattr(Person, attr) == value)
+
+        person_list: LimitOffsetPage[Person] = paginate(self.db, stmt)
         return person_list
 
     def create_new_person(self, person: Person) -> Person:

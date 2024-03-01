@@ -7,15 +7,18 @@ from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Person
 from pyfastapi.repositories import PersonRepository
-from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema
+from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema, QueryPersonSchema
 
 router = APIRouter()
 logger = getLogger(__name__)
 
 
 @router.get("/", response_model=LimitOffsetPage[PersonListSchema])
-def get_all_persons(repo: Annotated[PersonRepository, Depends()]) -> LimitOffsetPage[Person]:
-    person = repo.get_persons()
+def get_all_persons(
+        q: Annotated[QueryPersonSchema, Depends()],
+        repo: Annotated[PersonRepository, Depends()]
+) -> LimitOffsetPage[Person]:
+    person = repo.get_persons(q)
     return person
 
 
