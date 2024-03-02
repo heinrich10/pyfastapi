@@ -24,7 +24,7 @@ RUN pipx ensurepath
 
 # install dependencies
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi
+RUN poetry install --without dev --no-root --no-ansi
 
 # next stage
 FROM python:3.12.1-slim-bookworm as runtime
