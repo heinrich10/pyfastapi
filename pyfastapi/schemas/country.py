@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from pyfastapi.schemas import ContinentSchema
+from .base import BaseEnum
 
 
 class CountryBaseSchema(BaseModel):
@@ -32,3 +33,13 @@ class QueryCountrySchema(BaseModel):
     capital: str | None = None
     currency: str | None = None
     alpha_3: str | None = None
+
+
+class SortCountryEnum(BaseEnum):
+    code: str = "code"
+    name: str = "name"
+    phone: str = "phone"
+    symbol: str = "symbol"
+    capital: str = "capital"
+    currency: str = "currency"
+    alpha_3: str = "alpha_3"

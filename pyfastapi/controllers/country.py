@@ -13,10 +13,10 @@ router = APIRouter()
 @router.get("/", response_model=LimitOffsetPage[CountryListSchema])
 def get_all_countries(
         q: Annotated[QueryCountrySchema, Depends()],
-        repo: Annotated[CountryRepository, Depends()]
+        repo: Annotated[CountryRepository, Depends()],
+        sort: Annotated[str, Query(description="sort by")] = ""
 ) -> LimitOffsetPage[Country]:
-    print("this is q", q)
-    country = repo.get_countries(q)
+    country = repo.get_countries(q, sort)
     return country
 
 
