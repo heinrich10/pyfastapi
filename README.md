@@ -14,6 +14,12 @@ sample backend using pyfastapi, sqlalchemy, and alembic
 3. call the api endpoint `curl http://localhost:5000/persons`
 4. open `http://localhost:5000/docs` to view then openapi docs
 
+## How to run in a container
+1. build the image `podman build -t pyfastapi .`
+2. run the image `podman run -p 5000:5000 pyfastapi`
+
+note: you can use `docker` instead of `podman` as it is a drop in replacement
+
 ## Seed Data
 1. run `alembic upgrade head`
 2. sql schema and the data should be on `./sql_app.db`
