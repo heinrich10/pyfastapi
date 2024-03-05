@@ -10,7 +10,7 @@ from pyfastapi.schemas import ContinentSchema
 client = TestClient(app)
 
 
-def test_countries_seed_data() -> None:
+def test_countries_seed_data(init_db: None) -> None:
     """
     if seed data is modified, this will fail
     """
@@ -20,14 +20,14 @@ def test_countries_seed_data() -> None:
     assert count == 7
 
 
-def test_get_continents() -> None:
+def test_get_continents(init_db: None) -> None:
     response = client.get("/continents")
     body = response.json()
     assert response.status_code == 200
     assert len(body) == 7
 
 
-def test_get_one_continent() -> None:
+def test_get_one_continent(init_db: None) -> None:
     continent = "AF"
     response = client.get(f"/continents/{continent}")
     body: ContinentSchema = ContinentSchema(**response.json())
@@ -35,7 +35,7 @@ def test_get_one_continent() -> None:
     assert body.code == continent
 
 
-def test_get_one_continent_not_found() -> None:
+def test_get_one_continent_not_found(init_db: None) -> None:
     continent = "ZZ"
     response = client.get(f"/continents/{continent}")
     assert response.status_code == 404

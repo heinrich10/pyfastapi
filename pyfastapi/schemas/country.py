@@ -33,6 +33,7 @@ class QueryCountrySchema(BaseModel):
     capital: str | None = None
     currency: str | None = None
     alpha_3: str | None = None
+    continent_code: str | None = None
 
 
 class SortCountryEnum(BaseEnum):
@@ -43,3 +44,4 @@ class SortCountryEnum(BaseEnum):
     capital: str = "capital"
     currency: str = "currency"
     alpha_3: str = "alpha_3"
+    continent_code: str = "continent_code"

@@ -35,7 +35,7 @@ def add_50_records(faker: Faker) -> None:
     db.commit()
 
 
-def test_persons_seed_data() -> None:
+def test_persons_seed_data(init_db: None) -> None:
     """
     if seed data is modified, this will fail
     """
@@ -45,7 +45,7 @@ def test_persons_seed_data() -> None:
     assert count == 13
 
 
-def test_persons_default_pagination(add_50_records: None) -> None:
+def test_persons_default_pagination(init_db: None, add_50_records: None) -> None:
     body: LimitOffsetPage[Person]
     response, body = get_paginated("/persons", client)
     items: Sequence[Person] = body.items
@@ -53,7 +53,7 @@ def test_persons_default_pagination(add_50_records: None) -> None:
     assert body_length == DEFAULT_LIMIT
 
 
-def test_persons_limit_10() -> None:
+def test_persons_limit_10(init_db: None) -> None:
     limit = "10"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit)
@@ -62,7 +62,7 @@ def test_persons_limit_10() -> None:
     assert person.id == FIRST_PERSON
 
 
-def test_persons_limit_5_offset_10(add_50_records: None) -> None:
+def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
     limit = "5"
     offset = "10"
     body: LimitOffsetPage[PersonListSchema]
@@ -72,7 +72,7 @@ def test_persons_limit_5_offset_10(add_50_records: None) -> None:
     assert person.id != FIRST_PERSON
 
 
-def test_get_one_person() -> None:
+def test_get_one_person(init_db: None) -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
     body: PersonSchema = PersonSchema(**response.json())
@@ -84,14 +84,14 @@ def test_get_one_person() -> None:
     assert all(hasattr(continent, k) for k in ["code", "name"])
 
 
-def test_get_one_person_not_found() -> None:
+def test_get_one_person_not_found(init_db: None) -> None:
     person_id = 0
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
 
 
-def test_create_person() -> None:
+def test_create_person(init_db: None) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -114,7 +114,7 @@ def test_create_person() -> None:
     assert count == 14
 
 
-def test_update_person() -> None:
+def test_update_person(init_db: None) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"

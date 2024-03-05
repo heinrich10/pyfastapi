@@ -15,7 +15,7 @@ FIRST_COUNTRY = "AF"
 client = TestClient(app)
 
 
-def test_countries_seed_data() -> None:
+def test_countries_seed_data(init_db: None) -> None:
     """
     if seed data is modified, this will fail
     """
@@ -25,13 +25,13 @@ def test_countries_seed_data() -> None:
     assert count == 252
 
 
-def test_get_countries_default_limit() -> None:
+def test_get_countries_default_limit(init_db: None) -> None:
     body: LimitOffsetPage[CountryListSchema]
     response, body = get_paginated("/countries", client)
     assert len(body.items) == DEFAULT_LIMIT
 
 
-def test_get_countries_limit_10() -> None:
+def test_get_countries_limit_10(init_db: None) -> None:
     limit = "10"
     body: LimitOffsetPage[CountryListSchema]
     response, body = get_paginated("/countries", client, limit=limit)
@@ -40,7 +40,7 @@ def test_get_countries_limit_10() -> None:
     assert country.code == FIRST_COUNTRY
 
 
-def test_get_countries_limit_5_offset_10() -> None:
+def test_get_countries_limit_5_offset_10(init_db: None) -> None:
     limit = "5"
     offset = "10"
     body: LimitOffsetPage[CountryListSchema]
@@ -50,7 +50,7 @@ def test_get_countries_limit_5_offset_10() -> None:
     assert country.code != FIRST_COUNTRY
 
 
-def test_get_one_country() -> None:
+def test_get_one_country(init_db: None) -> None:
     country = "HK"
     response = client.get(f"/countries/{country}")
     body: CountryListSchema = CountryListSchema(**response.json())
@@ -58,7 +58,7 @@ def test_get_one_country() -> None:
     assert body.code == country
 
 
-def test_get_one_country_not_found() -> None:
+def test_get_one_country_not_found(init_db: None) -> None:
     country = "ZZ"
     response = client.get(f"/countries/{country}")
     assert response.status_code == 404
