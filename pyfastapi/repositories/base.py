@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Annotated, Tuple, List
+from typing import Annotated, Tuple, List, Type
 from toolz.functoolz import curry  # type: ignore
 
 from fastapi import Depends
@@ -19,8 +19,11 @@ class BaseRepository(ABC):
 
 @curry  # type: ignore
 def extract_query(
-    model: BaseModel, use_like_list: List[str], q: BaseModel, stmt: Select[Tuple[Base]]
+    model: Type[BaseModel], use_like_list: List[str], q: BaseModel, stmt: Select[Tuple[Base]]
 ) -> Select[Tuple[Base]]:
+    """
+    because of the @curry, return type is being ignored and is using Any
+    """
     stmt_ = stmt
     for attr, value in q:
         if value is not None:
@@ -32,7 +35,12 @@ def extract_query(
 
 
 @curry  # type: ignore
-def extract_sort(model: BaseModel, enum: type[BaseEnum], sort: str, stmt: Select[Tuple[Base]]) -> Select[Tuple[Base]]:
+def extract_sort(
+    model: Type[BaseModel], enum: Type[BaseEnum], sort: str, stmt: Select[Tuple[Type[Base]]]
+) -> Select[Tuple[Type[Base]]]:
+    """
+    because of the @curry, return type is being ignored and is using Any
+    """
     if sort:
         stmt_ = stmt
         first_char = sort[0]

@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from typing import Tuple
+
+from sqlalchemy import select, Select
 from sqlalchemy.orm import Session
 from unittest import TestCase
 
@@ -34,8 +36,11 @@ class TestCountryRepository(TestCase):
         stmt_ = extract_sort(Country, SortCountryEnum, sort_key_)(select(Country))
         return str(stmt_)
 
-    def get_extract_query(self, q):
-        return extract_query(Country, ["name"], q)(select(Country))
+    def get_extract_query(self, q: QueryCountrySchema) -> Select[Tuple[Country]]:
+        """
+        ignore because it returns any
+        """
+        return extract_query(Country, ["name"], q)(select(Country))  # type: ignore
 
     def test_country_extract_sort_if_part_of_enum_asc(self) -> None:
         def generate_sql(sort_key_: str) -> str:
@@ -93,8 +98,11 @@ class TestPersonRepository(TestCase):
         stmt_ = extract_sort(Person, SortPersonEnum, sort_key_)(select(Person))
         return str(stmt_)
 
-    def get_extract_query(self, q):
-        return extract_query(Person, ["first_name", "last_name"], q)(select(Person))
+    def get_extract_query(self, q: QueryPersonSchema) -> Select[Tuple[Person]]:
+        """
+        ignore because it returns any
+        """
+        return extract_query(Person, ["first_name", "last_name"], q)(select(Person))  # type: ignore
 
     # extract sort
     def test_person_extract_sort_if_part_of_enum_asc(self) -> None:
