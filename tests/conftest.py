@@ -10,7 +10,7 @@ pytest_plugins = ["faker"]
 AppConfig = get_config()
 
 
-@fixture(autouse=True)
+@fixture(scope="function")
 def init_db() -> Iterator[None]:
     """
     this is equivalent to "alembic upgrade head" then run "alembic downgrade base" after 1 test is done

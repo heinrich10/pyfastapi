@@ -15,6 +15,7 @@ from tests.api_tests.util_pagination_helper import get_paginated
 
 DEFAULT_LIMIT = 50
 FIRST_PERSON = 1
+NUM_SEED_DATA = 13
 
 client = TestClient(app)
 
@@ -35,17 +36,29 @@ def add_50_records(faker: Faker) -> None:
     db.commit()
 
 
-def test_persons_seed_data() -> None:
+@fixture(scope="function")
+def add_juan_dela_cruz() -> None:
+    db: Session = next(get_db())
+    person = Person(
+        first_name="Juan",
+        last_name="dela Cruz",
+        country_code="PH"
+    )
+    db.add(person)
+    db.commit()
+
+
+def test_persons_seed_data(init_db: None) -> None:
     """
     if seed data is modified, this will fail
     """
     db: Session = next(get_db())
     stmt = select(func.count()).select_from(Person)
     count = db.execute(stmt).scalar_one()
-    assert count == 13
+    assert count == NUM_SEED_DATA
 
 
-def test_persons_default_pagination(add_50_records: None) -> None:
+def test_persons_default_pagination(init_db: None, add_50_records: None) -> None:
     body: LimitOffsetPage[Person]
     response, body = get_paginated("/persons", client)
     items: Sequence[Person] = body.items
@@ -53,7 +66,7 @@ def test_persons_default_pagination(add_50_records: None) -> None:
     assert body_length == DEFAULT_LIMIT
 
 
-def test_persons_limit_10() -> None:
+def test_persons_limit_10(init_db: None) -> None:
     limit = "10"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit)
@@ -62,7 +75,7 @@ def test_persons_limit_10() -> None:
     assert person.id == FIRST_PERSON
 
 
-def test_persons_limit_5_offset_10(add_50_records: None) -> None:
+def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
     limit = "5"
     offset = "10"
     body: LimitOffsetPage[PersonListSchema]
@@ -72,7 +85,36 @@ def test_persons_limit_5_offset_10(add_50_records: None) -> None:
     assert person.id != FIRST_PERSON
 
 
-def test_get_one_person() -> None:
+def test_persons_with_filter(init_db: None, add_juan_dela_cruz: None) -> None:
+    filter_ = "first_name=juan&last_name=cruz"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?{filter_}", client)
+    assert len(body.items) == 1
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.last_name == "dela Cruz"
+    assert person.first_name == "Juan"
+    assert person.country_code == "PH"
+
+
+def test_persons_with_sort_asc(init_db: None) -> None:
+    sort = "first_name"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?sort={sort}", client)
+    assert len(body.items) == NUM_SEED_DATA
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.first_name == "Adam"
+
+
+def test_persons_with_sort_desc(init_db: None) -> None:
+    sort = "-first_name"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?sort={sort}", client)
+    assert len(body.items) == NUM_SEED_DATA
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.first_name == "Zoe"
+
+
+def test_get_one_person(init_db: None) -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
     body: PersonSchema = PersonSchema(**response.json())
@@ -84,14 +126,14 @@ def test_get_one_person() -> None:
     assert all(hasattr(continent, k) for k in ["code", "name"])
 
 
-def test_get_one_person_not_found() -> None:
+def test_get_one_person_not_found(init_db: None) -> None:
     person_id = 0
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
 
 
-def test_create_person() -> None:
+def test_create_person(init_db: None) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -114,7 +156,7 @@ def test_create_person() -> None:
     assert count == 14
 
 
-def test_update_person() -> None:
+def test_update_person(init_db: None) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"

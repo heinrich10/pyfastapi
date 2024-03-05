@@ -1,9 +1,12 @@
+from toolz .functoolz import compose  # type: ignore
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.sql import select
 
 from pyfastapi.models import Person, Country
-from .base import BaseRepository
+from pyfastapi.schemas import QueryPersonSchema, SortPersonEnum
+from .base import BaseRepository, extract_sort, extract_query
+
 
 
 class PersonRepository(BaseRepository):
@@ -11,8 +14,13 @@ class PersonRepository(BaseRepository):
         stmt = select(Person, Country).join(Country, Person.country_code == Country.code).where(Person.id == id_)
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def get_persons(self) -> LimitOffsetPage[Person]:
-        person_list: LimitOffsetPage[Person] = paginate(self.db, select(Person))
+    def get_persons(self, q: QueryPersonSchema, sort: str) -> LimitOffsetPage[Person]:
+        f = compose(
+            extract_query(Person, ["first_name", "last_name"], q),
+            extract_sort(Person, SortPersonEnum, sort)
+        )
+        stmt = f(select(Person))
+        person_list: LimitOffsetPage[Person] = paginate(self.db, stmt)
         return person_list
 
     def create_new_person(self, person: Person) -> Person:

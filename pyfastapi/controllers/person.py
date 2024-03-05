@@ -2,20 +2,24 @@ import traceback
 from typing import Annotated
 from logging import getLogger
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Path
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Path, Query
 from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Person
 from pyfastapi.repositories import PersonRepository
-from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema
+from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema, QueryPersonSchema
 
 router = APIRouter()
 logger = getLogger(__name__)
 
 
 @router.get("/", response_model=LimitOffsetPage[PersonListSchema])
-def get_all_persons(repo: Annotated[PersonRepository, Depends()]) -> LimitOffsetPage[Person]:
-    person = repo.get_persons()
+def get_all_persons(
+        repo: Annotated[PersonRepository, Depends()],
+        q: Annotated[QueryPersonSchema, Depends()],
+        sort: Annotated[str, Query(description="sort by")] = ""
+) -> LimitOffsetPage[Person]:
+    person = repo.get_persons(q, sort)
     return person
 
 
