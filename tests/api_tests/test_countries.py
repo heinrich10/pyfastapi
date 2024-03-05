@@ -50,6 +50,33 @@ def test_get_countries_limit_5_offset_10(init_db: None) -> None:
     assert country.code != FIRST_COUNTRY
 
 
+def test_get_countries_with_filter(init_db: None) -> None:
+    filter_ = "name=Hong Kong"
+    body: LimitOffsetPage[CountryListSchema]
+    response, body = get_paginated(f"/countries?{filter_}", client)
+    assert len(body.items) == 1
+    country: CountryListSchema = CountryListSchema.model_validate(body.items[0])
+    assert country.name == "Hong Kong"
+
+
+def test_get_countries_with_sort_asc(init_db: None) -> None:
+    sort = "name"
+    body: LimitOffsetPage[CountryListSchema]
+    response, body = get_paginated(f"/countries?sort={sort}", client)
+    assert len(body.items) == DEFAULT_LIMIT
+    country: CountryListSchema = CountryListSchema.model_validate(body.items[0])
+    assert country.name == "Afghanistan"
+
+
+def test_get_countries_with_sort_desc(init_db: None) -> None:
+    sort = "-name"
+    body: LimitOffsetPage[CountryListSchema]
+    response, body = get_paginated(f"/countries?sort={sort}", client)
+    assert len(body.items) == DEFAULT_LIMIT
+    country: CountryListSchema = CountryListSchema.model_validate(body.items[0])
+    assert country.name == "Zimbabwe"
+
+
 def test_get_one_country(init_db: None) -> None:
     country = "HK"
     response = client.get(f"/countries/{country}")

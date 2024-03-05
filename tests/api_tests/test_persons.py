@@ -15,6 +15,7 @@ from tests.api_tests.util_pagination_helper import get_paginated
 
 DEFAULT_LIMIT = 50
 FIRST_PERSON = 1
+NUM_SEED_DATA = 13
 
 client = TestClient(app)
 
@@ -32,6 +33,18 @@ def add_50_records(faker: Faker) -> None:
         )
         person_list.append(person)
     db.bulk_save_objects(person_list)
+    db.commit()
+
+
+@fixture(scope="function")
+def add_juan_dela_cruz() -> None:
+    db: Session = next(get_db())
+    person = Person(
+        first_name="Juan",
+        last_name="dela Cruz",
+        country_code="PH"
+    )
+    db.add(person)
     db.commit()
 
 
@@ -70,6 +83,35 @@ def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
     assert len(body.items) == int(limit)
     person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
     assert person.id != FIRST_PERSON
+
+
+def test_persons_with_filter(init_db: None, add_juan_dela_cruz) -> None:
+    filter_ = "first_name=juan&last_name=cruz"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?{filter_}", client)
+    assert len(body.items) == 1
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.last_name == "dela Cruz"
+    assert person.first_name == "Juan"
+    assert person.country_code == "PH"
+
+
+def test_persons_with_sort_asc(init_db: None) -> None:
+    sort = "first_name"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?sort={sort}", client)
+    assert len(body.items) == NUM_SEED_DATA
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.first_name == "Adam"
+
+
+def test_persons_with_sort_desc(init_db: None) -> None:
+    sort = "-first_name"
+    body: LimitOffsetPage[PersonListSchema]
+    response, body = get_paginated(f"/persons?sort={sort}", client)
+    assert len(body.items) == NUM_SEED_DATA
+    person: PersonListSchema = PersonListSchema.model_validate(body.items[0])
+    assert person.first_name == "Zoe"
 
 
 def test_get_one_person(init_db: None) -> None:
