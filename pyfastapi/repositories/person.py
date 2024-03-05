@@ -4,8 +4,9 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.sql import select
 
 from pyfastapi.models import Person, Country
-from .base import BaseRepository, extract_sort, extract_query
 from pyfastapi.schemas import QueryPersonSchema, SortPersonEnum
+from .base import BaseRepository, extract_sort, extract_query
+
 
 
 class PersonRepository(BaseRepository):

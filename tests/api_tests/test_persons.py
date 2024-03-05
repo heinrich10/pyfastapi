@@ -55,7 +55,7 @@ def test_persons_seed_data(init_db: None) -> None:
     db: Session = next(get_db())
     stmt = select(func.count()).select_from(Person)
     count = db.execute(stmt).scalar_one()
-    assert count == 13
+    assert count == NUM_SEED_DATA
 
 
 def test_persons_default_pagination(init_db: None, add_50_records: None) -> None:
