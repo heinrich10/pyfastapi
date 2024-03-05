@@ -85,7 +85,7 @@ def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
     assert person.id != FIRST_PERSON
 
 
-def test_persons_with_filter(init_db: None, add_juan_dela_cruz) -> None:
+def test_persons_with_filter(init_db: None, add_juan_dela_cruz: None) -> None:
     filter_ = "first_name=juan&last_name=cruz"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated(f"/persons?{filter_}", client)
