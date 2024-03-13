@@ -2,7 +2,7 @@
 
 sample backend using pyfastapi, sqlalchemy, and alembic
 
-## Preqrequisites
+## Pre-requisites
 - python 3.12
 - poetry
 - sqlite
