@@ -22,14 +22,6 @@ class TestBaseRepository(TestCase):
     def setUpClass(cls) -> None:
         cls.repo = CountryRepository(Session())
 
-    def test_country(self) -> None:
-        val = extract_sort(Country, SortCountryEnum, "name")(select(Country))
-        print("val", val)
-
-    def test_person(self) -> None:
-        val = extract_sort(Person, SortPersonEnum, "id")(select(Person))
-        print("person", val)
-
 
 class TestCountryRepository(TestCase):
     def generate_from_sqlalchemy(self, sort_key_: str) -> str:
@@ -41,6 +33,17 @@ class TestCountryRepository(TestCase):
         ignore because it returns any
         """
         return extract_query(Country, ["name"], q)(select(Country))  # type: ignore
+
+    def test_country_extract_sort_is_pure_function(self) -> None:
+        stmt = select(Country)
+        # first call
+        stmt_ = extract_sort(Country, SortCountryEnum, "name")(stmt)
+        assert str(stmt_) == country_reference_sql + " ORDER BY countries.name ASC"
+        assert str(stmt) == str(select(Country))
+        # second call
+        stmt_ = extract_sort(Country, SortCountryEnum, "phone")(stmt)
+        assert str(stmt_) == country_reference_sql + " ORDER BY countries.phone ASC"
+        assert str(stmt) == str(select(Country))
 
     def test_country_extract_sort_if_part_of_enum_asc(self) -> None:
         def generate_sql(sort_key_: str) -> str:
@@ -103,6 +106,17 @@ class TestPersonRepository(TestCase):
         ignore because it returns any
         """
         return extract_query(Person, ["first_name", "last_name"], q)(select(Person))  # type: ignore
+
+    def test_person_is_pure_function(self) -> None:
+        stmt = select(Person)
+        # first call
+        stmt_ = extract_sort(Person, SortPersonEnum, "first_name")(stmt)
+        assert str(stmt_) == person_reference_sql + " ORDER BY persons.first_name ASC"
+        assert str(stmt) == str(select(Person))
+        # second call
+        stmt_ = extract_sort(Person, SortPersonEnum, "last_name")(stmt)
+        assert str(stmt_) == person_reference_sql + " ORDER BY persons.last_name ASC"
+        assert str(stmt) == str(select(Person))
 
     # extract sort
     def test_person_extract_sort_if_part_of_enum_asc(self) -> None:
