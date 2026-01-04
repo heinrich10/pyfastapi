@@ -40,7 +40,6 @@ config:
 title: ERD
 ---
 erDiagram
-	direction LR
 	person {
 		int id PK ""  
 		String last_name  ""  
