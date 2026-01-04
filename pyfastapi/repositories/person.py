@@ -8,7 +8,6 @@ from pyfastapi.schemas import QueryPersonSchema, SortPersonEnum
 from .base import BaseRepository, extract_sort, extract_query
 
 
-
 class PersonRepository(BaseRepository):
     def get_person(self, id_: int) -> Person | None:
         stmt = select(Person, Country).join(Country, Person.country_code == Country.code).where(Person.id == id_)
