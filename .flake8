@@ -1,0 +1,8 @@
+[flake8]
+exclude = venv,.venv,build,dist,__pycache__,.pytest_cache,.mypy_cache,*.egg-info
+max-line-length = 127
+max-complexity = 10
+inline-quotes = double
+count = True
+show-source = True
+statistics = True
