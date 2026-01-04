@@ -29,3 +29,41 @@ note: you can use `docker` instead of `podman` as it is a drop in replacement
 1. make sure main dependencies are installed
 2. run `poetry install`
 2. run `pytest`, take note that it uses `.env.test` for configuration
+
+## Data Model
+
+```mermaid
+---
+config:
+  layout: dagre
+  look: handDrawn
+title: ERD
+---
+erDiagram
+	person {
+		int id PK ""  
+		String last_name  ""  
+		String first_name  ""  
+		String country_code FK ""  
+		timestamp updated_at  ""  
+		timestamp created_at  ""  
+	}
+	country {
+		String code PK ""  
+		String name  ""  
+		int phone  ""  
+		String symbol  ""  
+		String capital  ""  
+		String currency  ""  
+		String continent_code FK ""  
+		String alpha_3  ""  
+		timestamp updated_at  ""  
+		timestamp created_at  ""  
+	}
+	continent {
+		String code PK ""  
+		String name  ""  
+	}
+	person}|--||country:"residesIn"
+	country}|--||continent:"belongsTo"
+```
