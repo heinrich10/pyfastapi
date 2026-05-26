@@ -107,7 +107,7 @@ def test_persons_with_sort_desc(init_db: None, client: TestClient) -> None:
     assert person.first_name == "Zoe"
 
 
-def test_get_one_person(init_db: None, client: TestClient) -> None:
+def test_get_one_person(init_db: None, client: TestClient, db_session: Session) -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
     body: PersonSchema = PersonSchema(**response.json())
@@ -118,12 +118,25 @@ def test_get_one_person(init_db: None, client: TestClient) -> None:
     assert all(hasattr(country, k) for k in ["code", "name", "phone", "symbol", "capital", "currency", "alpha_3"])
     assert all(hasattr(continent, k) for k in ["code", "name"])
 
+    # Verify the same data is present in the database
+    person_from_db: Person = db_session.execute(
+        select(Person).where(Person.id == person_id)
+    ).scalar_one()
+    assert person_from_db.first_name == body.first_name
+    assert person_from_db.last_name == body.last_name
 
-def test_get_one_person_not_found(init_db: None, client: TestClient) -> None:
+
+def test_get_one_person_not_found(init_db: None, client: TestClient, db_session: Session) -> None:
     person_id = 0
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
+
+    # Verify the person does not exist in the database
+    person_from_db = db_session.execute(
+        select(Person).where(Person.id == person_id)
+    ).scalar_one_or_none()
+    assert person_from_db is None
 
 
 def test_create_person(init_db: None, client: TestClient, db_session: Session) -> None:
@@ -135,17 +148,24 @@ def test_create_person(init_db: None, client: TestClient, db_session: Session) -
         "last_name": last_name,
         "country_code": country_code,
     }
-    response = client.post("/persons/", json=data)
+    response = client.post("/persons", json=data)
     body: PersonListSchema = PersonListSchema(**response.json())
     assert body.first_name == first_name
     assert body.last_name == last_name
     assert body.country_code == country_code
     assert body.id is not None
 
-    # should add 1 to total
-    stmt = select(func.count()).select_from(Person)
-    count: int = db_session.execute(stmt).scalar_one()
-    assert count == 14
+    # Verify the specific record was persisted in the database
+    person_from_db: Person = db_session.execute(
+        select(Person).where(Person.id == body.id)
+    ).scalar_one()
+    assert person_from_db.first_name == first_name
+    assert person_from_db.last_name == last_name
+    assert person_from_db.country_code == country_code
+
+    # Verify total count increased by 1
+    count: int = db_session.execute(select(func.count()).select_from(Person)).scalar_one()
+    assert count == NUM_SEED_DATA + 1
 
 
 def test_update_person(init_db: None, client: TestClient, db_session: Session) -> None:

@@ -72,16 +72,29 @@ def test_get_countries_with_sort_desc(init_db: None, client: TestClient) -> None
     assert country.name == "Zimbabwe"
 
 
-def test_get_one_country(init_db: None, client: TestClient) -> None:
+def test_get_one_country(init_db: None, client: TestClient, db_session: Session) -> None:
     country = "HK"
     response = client.get(f"/countries/{country}")
     body: CountryListSchema = CountryListSchema(**response.json())
     assert response.status_code == 200
     assert body.code == country
 
+    # Verify the same record exists in the database
+    country_from_db: Country = db_session.execute(
+        select(Country).where(Country.code == country)
+    ).scalar_one()
+    assert country_from_db.name == body.name
+    assert country_from_db.continent_code == body.continent_code
 
-def test_get_one_country_not_found(init_db: None, client: TestClient) -> None:
+
+def test_get_one_country_not_found(init_db: None, client: TestClient, db_session: Session) -> None:
     country = "ZZ"
     response = client.get(f"/countries/{country}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Country {country} not found"}
+
+    # Verify the country does not exist in the database
+    country_from_db = db_session.execute(
+        select(Country).where(Country.code == country)
+    ).scalar_one_or_none()
+    assert country_from_db is None

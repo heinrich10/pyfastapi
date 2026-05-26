@@ -10,7 +10,7 @@ from pyfastapi.schemas import ContinentSchema
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ContinentSchema])
+@router.get("", response_model=List[ContinentSchema])
 def get_all_continents(repo: Annotated[ContinentRepository, Depends()]) -> ScalarResult[Continent]:
     continents = repo.get_continents()
     return continents

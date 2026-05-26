@@ -22,16 +22,28 @@ def test_get_continents(init_db: None, client: TestClient) -> None:
     assert len(body) == 7
 
 
-def test_get_one_continent(init_db: None, client: TestClient) -> None:
+def test_get_one_continent(init_db: None, client: TestClient, db_session: Session) -> None:
     continent = "AF"
     response = client.get(f"/continents/{continent}")
     body: ContinentSchema = ContinentSchema(**response.json())
     assert response.status_code == 200
     assert body.code == continent
 
+    # Verify the same record exists in the database
+    continent_from_db: Continent = db_session.execute(
+        select(Continent).where(Continent.code == continent)
+    ).scalar_one()
+    assert continent_from_db.name == body.name
 
-def test_get_one_continent_not_found(init_db: None, client: TestClient) -> None:
+
+def test_get_one_continent_not_found(init_db: None, client: TestClient, db_session: Session) -> None:
     continent = "ZZ"
     response = client.get(f"/continents/{continent}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Continent {continent} not found"}
+
+    # Verify the continent does not exist in the database
+    continent_from_db = db_session.execute(
+        select(Continent).where(Continent.code == continent)
+    ).scalar_one_or_none()
+    assert continent_from_db is None

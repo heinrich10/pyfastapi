@@ -13,7 +13,7 @@ router = APIRouter()
 logger = getLogger(__name__)
 
 
-@router.get("/", response_model=LimitOffsetPage[PersonListSchema])
+@router.get("", response_model=LimitOffsetPage[PersonListSchema])
 def get_all_persons(
         repo: Annotated[PersonRepository, Depends()],
         q: Annotated[QueryPersonSchema, Depends()],
@@ -34,7 +34,7 @@ def get_one_persons(
     return person
 
 
-@router.post("/", response_model=PersonListSchema)
+@router.post("", response_model=PersonListSchema)
 def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]) -> Person:
     logger.debug(f"body {body}")
     try:

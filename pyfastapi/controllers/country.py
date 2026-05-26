@@ -10,7 +10,7 @@ from pyfastapi.schemas import CountryListSchema, QueryCountrySchema
 router = APIRouter()
 
 
-@router.get("/", response_model=LimitOffsetPage[CountryListSchema])
+@router.get("", response_model=LimitOffsetPage[CountryListSchema])
 def get_all_countries(
         q: Annotated[QueryCountrySchema, Depends()],
         repo: Annotated[CountryRepository, Depends()],
