@@ -1,34 +1,61 @@
 # PYFASTAPI
 
-sample backend using pyfastapi, sqlalchemy, and alembic
+Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. It demonstrates a layered architecture with CRUD endpoints for `Person`, `Country`, and `Continent`.
 
 ## Pre-requisites
-- python 3.12
-- poetry
-- sqlite
+
+- Python 3.12+
+- [uv](https://docs.astral.sh/uv/)
+- SQLite
 
 ## How to run
-1. install dependencies `poetry install`
-2. copy `.env.example` to `.env` and change the values if needed
-2. run the app `poetry run python run.py`
-3. call the api endpoint `curl http://localhost:5000/persons`
-4. open `http://localhost:5000/docs` to view then openapi docs
 
-## How to run in a container
-1. build the image `podman build -t pyfastapi .`
-2. run the image `podman run -p 5000:5000 pyfastapi`
+1. Install dependencies  
+   `uv sync --locked --all-extras --dev`
 
-note: you can use `docker` instead of `podman` as it is a drop in replacement
+2. Copy `.env.example` to `.env` and change the values if needed  
+   `cp .env.example .env`
+
+3. Run the app  
+   `uv run python run.py`
+
+4. Call the API endpoint  
+   `curl http://localhost:5000/persons`
+
+5. Open `http://localhost:5000/docs` to view the OpenAPI docs
+
+## How to run in a container (WIP)
+
+1. Build the image  
+   `podman build -t pyfastapi .`
+
+2. Run the image  
+   `podman run -p 5000:5000 pyfastapi`
+
+> Note: You can use `docker` instead of `podman` as it is a drop-in replacement.  
+> this part is still WIP.
 
 ## Seed Data
-1. run `alembic upgrade head`
-2. sql schema and the data should be on `./sql_app.db`
-3. refer to `alembic.ini` to change other configuration, it uses .env for the DB url
+
+1. Run migrations  
+   `alembic upgrade head`
+
+2. The SQL schema and seed data will be created in `./sql_app.db`
+
+3. Refer to `alembic.ini` to change other configuration. It uses `.env` for the DB URL.
 
 ## Tests
-1. make sure main dependencies are installed
-2. run `poetry install`
-2. run `pytest`, take note that it uses `.env.test` for configuration
+
+1. Make sure dependencies are installed  
+   `uv sync --locked --all-extras --dev`
+
+2. Run the test suite  
+   `uv run pytest`
+
+3. Run with coverage  
+   `uv run poe coverage`
+
+> Tests automatically set `ENVIRONMENT=test`, which loads `.env.test` for test configuration.
 
 ## Data Model
 
@@ -40,30 +67,26 @@ config:
 title: ERD
 ---
 erDiagram
-	person {
-		int id PK ""  
-		String last_name  ""  
-		String first_name  ""  
-		String country_code FK ""  
-		timestamp updated_at  ""  
-		timestamp created_at  ""  
-	}
-	country {
-		String code PK ""  
-		String name  ""  
-		int phone  ""  
-		String symbol  ""  
-		String capital  ""  
-		String currency  ""  
-		String continent_code FK ""  
-		String alpha_3  ""  
-		timestamp updated_at  ""  
-		timestamp created_at  ""  
-	}
-	continent {
-		String code PK ""  
-		String name  ""  
-	}
-	person}|--||country:"residesIn"
-	country}|--||continent:"belongsTo"
+    person {
+        int id PK
+        String last_name
+        String first_name
+        String country_code FK
+    }
+    country {
+        String code PK
+        String name
+        int phone
+        String symbol
+        String capital
+        String currency
+        String continent_code FK
+        String alpha_3
+    }
+    continent {
+        String code PK
+        String name
+    }
+    person }|--|| country : "residesIn"
+    country }|--|| continent : "belongsTo"
 ```

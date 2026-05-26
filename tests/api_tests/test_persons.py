@@ -7,8 +7,6 @@ from pytest import fixture
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import select, func
 
-from pyfastapi.libs.db import get_db
-from pyfastapi.main import app
 from pyfastapi.models import Person
 from pyfastapi.schemas import PersonListSchema, PersonSchema, CountrySchema
 from tests.api_tests.util_pagination_helper import get_paginated
@@ -17,12 +15,9 @@ DEFAULT_LIMIT = 50
 FIRST_PERSON = 1
 NUM_SEED_DATA = 13
 
-client = TestClient(app)
-
 
 @fixture(scope="function")
-def add_50_records(faker: Faker) -> None:
-    db: Session = next(get_db())
+def add_50_records(faker: Faker, db_session: Session) -> None:
     person_list = []
     for i in range(50):
         name = faker.name().split()
@@ -32,33 +27,31 @@ def add_50_records(faker: Faker) -> None:
             country_code="HK"
         )
         person_list.append(person)
-    db.bulk_save_objects(person_list)
-    db.commit()
+    db_session.bulk_save_objects(person_list)
+    db_session.commit()
 
 
 @fixture(scope="function")
-def add_juan_dela_cruz() -> None:
-    db: Session = next(get_db())
+def add_juan_dela_cruz(db_session: Session) -> None:
     person = Person(
         first_name="Juan",
         last_name="dela Cruz",
         country_code="PH"
     )
-    db.add(person)
-    db.commit()
+    db_session.add(person)
+    db_session.commit()
 
 
-def test_persons_seed_data(init_db: None) -> None:
+def test_persons_seed_data(init_db: None, db_session: Session) -> None:
     """
     if seed data is modified, this will fail
     """
-    db: Session = next(get_db())
     stmt = select(func.count()).select_from(Person)
-    count = db.execute(stmt).scalar_one()
+    count = db_session.execute(stmt).scalar_one()
     assert count == NUM_SEED_DATA
 
 
-def test_persons_default_pagination(init_db: None, add_50_records: None) -> None:
+def test_persons_default_pagination(init_db: None, add_50_records: None, client: TestClient) -> None:
     body: LimitOffsetPage[Person]
     response, body = get_paginated("/persons", client)
     items: Sequence[Person] = body.items
@@ -66,7 +59,7 @@ def test_persons_default_pagination(init_db: None, add_50_records: None) -> None
     assert body_length == DEFAULT_LIMIT
 
 
-def test_persons_limit_10(init_db: None) -> None:
+def test_persons_limit_10(init_db: None, client: TestClient) -> None:
     limit = "10"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated("/persons", client, limit=limit)
@@ -75,7 +68,7 @@ def test_persons_limit_10(init_db: None) -> None:
     assert person.id == FIRST_PERSON
 
 
-def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
+def test_persons_limit_5_offset_10(init_db: None, add_50_records: None, client: TestClient) -> None:
     limit = "5"
     offset = "10"
     body: LimitOffsetPage[PersonListSchema]
@@ -85,7 +78,7 @@ def test_persons_limit_5_offset_10(init_db: None, add_50_records: None) -> None:
     assert person.id != FIRST_PERSON
 
 
-def test_persons_with_filter(init_db: None, add_juan_dela_cruz: None) -> None:
+def test_persons_with_filter(init_db: None, add_juan_dela_cruz: None, client: TestClient) -> None:
     filter_ = "first_name=juan&last_name=cruz"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated(f"/persons?{filter_}", client)
@@ -96,7 +89,7 @@ def test_persons_with_filter(init_db: None, add_juan_dela_cruz: None) -> None:
     assert person.country_code == "PH"
 
 
-def test_persons_with_sort_asc(init_db: None) -> None:
+def test_persons_with_sort_asc(init_db: None, client: TestClient) -> None:
     sort = "first_name"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated(f"/persons?sort={sort}", client)
@@ -105,7 +98,7 @@ def test_persons_with_sort_asc(init_db: None) -> None:
     assert person.first_name == "Adam"
 
 
-def test_persons_with_sort_desc(init_db: None) -> None:
+def test_persons_with_sort_desc(init_db: None, client: TestClient) -> None:
     sort = "-first_name"
     body: LimitOffsetPage[PersonListSchema]
     response, body = get_paginated(f"/persons?sort={sort}", client)
@@ -114,7 +107,7 @@ def test_persons_with_sort_desc(init_db: None) -> None:
     assert person.first_name == "Zoe"
 
 
-def test_get_one_person(init_db: None) -> None:
+def test_get_one_person(init_db: None, client: TestClient) -> None:
     person_id = 1
     response = client.get(f"/persons/{person_id}")
     body: PersonSchema = PersonSchema(**response.json())
@@ -126,14 +119,14 @@ def test_get_one_person(init_db: None) -> None:
     assert all(hasattr(continent, k) for k in ["code", "name"])
 
 
-def test_get_one_person_not_found(init_db: None) -> None:
+def test_get_one_person_not_found(init_db: None, client: TestClient) -> None:
     person_id = 0
     response = client.get(f"/persons/{person_id}")
     assert response.status_code == 404
     assert response.json() == {"detail": f"Person {person_id} not found"}
 
 
-def test_create_person(init_db: None) -> None:
+def test_create_person(init_db: None, client: TestClient, db_session: Session) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -150,13 +143,12 @@ def test_create_person(init_db: None) -> None:
     assert body.id is not None
 
     # should add 1 to total
-    db: Session = next(get_db())
     stmt = select(func.count()).select_from(Person)
-    count: int = db.execute(stmt).scalar_one()
+    count: int = db_session.execute(stmt).scalar_one()
     assert count == 14
 
 
-def test_update_person(init_db: None) -> None:
+def test_update_person(init_db: None, client: TestClient, db_session: Session) -> None:
     first_name = "test1"
     last_name = "test2"
     country_code = "PH"
@@ -176,9 +168,8 @@ def test_update_person(init_db: None) -> None:
     response2 = client.put(f"/persons/{id_}", json=data)
     assert response2.status_code == 204
 
-    db: Session = next(get_db())
     stmt = select(Person).where(Person.id == id_)
-    updated_person: Person = db.execute(stmt).scalar_one()
+    updated_person: Person = db_session.execute(stmt).scalar_one()
     assert updated_person.first_name == first_name
     assert updated_person.last_name == last_name
     assert updated_person.country_code == country_code
