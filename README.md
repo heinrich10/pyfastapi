@@ -57,6 +57,12 @@ Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. 
 
 > Tests automatically set `ENVIRONMENT=test`, which loads `.env.test` for test configuration.
 
+## API Conventions
+
+- **No trailing slashes on collection endpoints.** Routes are registered as `/persons`, `/countries`, and `/continents`. Accessing the trailing-slash variant (e.g., `/persons/`) will receive a `307 Temporary Redirect` to the canonical path.
+- **Sort syntax**: Prefix with `-` for descending (e.g., `-name`), `+` or no prefix for ascending.
+- **Filter syntax**: Query parameters are mapped to schema fields. String fields use `ILIKE` (`%value%`); others use exact equality.
+
 ## Data Model
 
 ```mermaid

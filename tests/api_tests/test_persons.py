@@ -165,7 +165,7 @@ def test_create_person(init_db: None, client: TestClient, db_session: Session) -
 
     # Verify total count increased by 1
     count: int = db_session.execute(select(func.count()).select_from(Person)).scalar_one()
-    assert count == 14
+    assert count == NUM_SEED_DATA + 1
 
 
 def test_update_person(init_db: None, client: TestClient, db_session: Session) -> None:
