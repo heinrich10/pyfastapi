@@ -31,6 +31,14 @@ def test_person_full_crud_flow(init_db: None, client: TestClient, db_session: Se
     assert created.id is not None
     person_id = created.id
 
+    # Verify the person was actually persisted in the database
+    person_from_db: Person = db_session.execute(
+        select(Person).where(Person.id == person_id)
+    ).scalar_one()
+    assert person_from_db.first_name == "End"
+    assert person_from_db.last_name == "ToEnd"
+    assert person_from_db.country_code == "PH"
+
     # 2. Get by ID
     get_response = client.get(f"/persons/{person_id}")
     assert get_response.status_code == 200
@@ -57,6 +65,7 @@ def test_person_full_crud_flow(init_db: None, client: TestClient, db_session: Se
     assert put_response.status_code == 204
 
     # 5. Verify update in DB
+    db_session.expire_all()
     stmt = select(Person).where(Person.id == person_id)
     updated_person: Person = db_session.execute(stmt).scalar_one()
     assert updated_person.first_name == "Updated"
