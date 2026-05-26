@@ -1,4 +1,4 @@
-import sys
+import os
 from functools import lru_cache
 from logging import getLogger
 
@@ -8,14 +8,14 @@ logger = getLogger(__name__)
 
 
 class Settings(BaseSettings):
-
     def __init__(self, _env_file: str) -> None:
         super().__init__(_env_file=_env_file)
 
     DB_HOST: str = "sqlite:///./sql_app.db"
     HOST: str = "0.0.0.0"
-    PORT: int = 5000
+    PORT: int = 3000
     LOG_LEVEL: str = "info"
+    ENVIRONMENT: str = "development"
 
     model_config = SettingsConfigDict()
 
@@ -23,13 +23,12 @@ class Settings(BaseSettings):
 @lru_cache
 def get_config() -> Settings:
     """
-    Get the configuration settings
-    This will check if it is running on pytest.
-    If it is, it will use the .env.test file, otherwise it will use the .env file
+    Get the configuration settings.
+    Uses the ENVIRONMENT env var to decide which env file to load.
     """
-    file = ".env.test" if "pytest" in sys.modules else ".env"
-    logger.info(f"logger input file {file}")
-    return Settings(_env_file=file)
+    env_file = ".env.test" if os.getenv("ENVIRONMENT") == "test" else ".env"
+    logger.info(f"loading env file {env_file}")
+    return Settings(_env_file=env_file)
 
 
 __all__ = ["get_config"]
