@@ -22,7 +22,7 @@ def test_person_full_crud_flow(init_db: None, client: TestClient, db_session: Se
         "last_name": "ToEnd",
         "country_code": "PH",
     }
-    create_response = client.post("/persons/", json=create_data)
+    create_response = client.post("/persons", json=create_data)
     assert create_response.status_code == 200
     created: PersonListSchema = PersonListSchema(**create_response.json())
     assert created.first_name == "End"
@@ -86,7 +86,7 @@ def test_create_person_invalid_country_code_succeeds_on_sqlite(
         "last_name": "Rider",
         "country_code": "XX",
     }
-    response = client.post("/persons/", json=data)
+    response = client.post("/persons", json=data)
     # SQLite default: no FK enforcement.
     assert response.status_code == 200
     created = PersonListSchema(**response.json())

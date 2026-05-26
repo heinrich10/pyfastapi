@@ -23,7 +23,7 @@ Accept: application/json
 ###
 
 ### Create a new person
-POST {{host}}/persons/
+POST {{host}}/persons
 Content-Type: application/json
 
 {

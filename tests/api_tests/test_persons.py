@@ -148,7 +148,7 @@ def test_create_person(init_db: None, client: TestClient, db_session: Session) -
         "last_name": last_name,
         "country_code": country_code,
     }
-    response = client.post("/persons/", json=data)
+    response = client.post("/persons", json=data)
     body: PersonListSchema = PersonListSchema(**response.json())
     assert body.first_name == first_name
     assert body.last_name == last_name
