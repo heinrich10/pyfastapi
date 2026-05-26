@@ -3,8 +3,12 @@ from typing import Iterator
 
 from alembic import command
 from alembic.config import Config
+from fastapi.testclient import TestClient
 from pytest import fixture
+from sqlalchemy.orm import Session
 
+from pyfastapi.libs.db import get_session_factory
+from pyfastapi.main import app
 from pyfastapi.utils.config import get_config
 
 os.environ.setdefault("ENVIRONMENT", "test")
@@ -25,6 +29,22 @@ def init_db() -> Iterator[None]:
     command.upgrade(config, "head")
     yield None
     command.downgrade(config, "base")
+
+
+@fixture(scope="session")
+def client() -> Iterator[TestClient]:
+    with TestClient(app) as c:
+        yield c
+
+
+@fixture(scope="function")
+def db_session() -> Iterator[Session]:
+    factory = get_session_factory()
+    db = factory()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 # faker fixtures below
