@@ -1,0 +1,75 @@
+### Health Check
+GET {{host}}/health
+Accept: application/json
+
+###
+
+### List all persons (paginated)
+GET {{host}}/persons
+Accept: application/json
+
+###
+
+### List persons with filter and sort
+GET {{host}}/persons?first_name=John&sort=-last_name
+Accept: application/json
+
+###
+
+### Get person by ID
+GET {{host}}/persons/1
+Accept: application/json
+
+###
+
+### Create a new person
+POST {{host}}/persons/
+Content-Type: application/json
+
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "country_code": "PH"
+}
+
+###
+
+### Update a person
+PUT {{host}}/persons/1
+Content-Type: application/json
+
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "country_code": "HK"
+}
+
+###
+
+### List all countries (paginated)
+GET {{host}}/countries
+Accept: application/json
+
+###
+
+### List countries with filter and sort
+GET {{host}}/countries?name=United&sort=-name
+Accept: application/json
+
+###
+
+### Get country by code
+GET {{host}}/countries/PH
+Accept: application/json
+
+###
+
+### List all continents
+GET {{host}}/continents
+Accept: application/json
+
+###
+
+### Get continent by code
+GET {{host}}/continents/AS
+Accept: application/json
