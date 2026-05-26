@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     DB_HOST: str = "sqlite:///./sql_app.db"
     HOST: str = "0.0.0.0"
-    PORT: int = 3000
+    PORT: int = 5000
     LOG_LEVEL: str = "info"
     ENVIRONMENT: str = "development"
 

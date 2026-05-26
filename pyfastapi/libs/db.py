@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from pyfastapi.utils.config import get_config
 
 _engine: Engine | None = None
+_session_factory: sessionmaker[Session] | None = None
 
 
 def get_engine() -> Engine:
@@ -19,7 +20,10 @@ def get_engine() -> Engine:
 
 
 def get_session_factory() -> sessionmaker[Session]:
-    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+    return _session_factory
 
 
 def get_db() -> Iterator[Session]:

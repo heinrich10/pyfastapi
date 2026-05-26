@@ -24,7 +24,7 @@ Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. 
 
 5. Open `http://localhost:5000/docs` to view the OpenAPI docs
 
-## How to run in a container
+## How to run in a container (WIP)
 
 1. Build the image  
    `podman build -t pyfastapi .`
@@ -33,7 +33,7 @@ Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. 
    `podman run -p 5000:5000 pyfastapi`
 
 > Note: You can use `docker` instead of `podman` as it is a drop-in replacement.  
-> The Dockerfile currently references Poetry, but the active package manager is `uv`. See `architecture.md` for migration notes.
+> this part is still WIP.
 
 ## Seed Data
 

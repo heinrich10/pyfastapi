@@ -11,7 +11,7 @@ from pyfastapi.libs.db import get_session_factory
 from pyfastapi.main import app
 from pyfastapi.utils.config import get_config
 
-os.environ.setdefault("ENVIRONMENT", "test")
+os.environ["ENVIRONMENT"] = "test"
 
 pytest_plugins = ["faker"]
 
