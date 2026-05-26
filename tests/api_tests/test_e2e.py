@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import select
 
 from pyfastapi.models import Person, Country, Continent
-from pyfastapi.schemas import PersonListSchema, PersonSchema, CountryListSchema, CountrySchema, ContinentSchema
+from pyfastapi.schemas import PersonListSchema, PersonSchema, CountryListSchema, ContinentSchema
 
 
 def test_person_full_crud_flow(init_db: None, client: TestClient, db_session: Session) -> None:
@@ -169,7 +169,7 @@ def test_countries_pagination_boundary(init_db: None, client: TestClient) -> Non
     """
     response = client.get("/countries?limit=10&offset=1000")
     assert response.status_code == 200
-    page: LimitOffsetPage[CountrySchema] = LimitOffsetPage(**response.json())
+    page: LimitOffsetPage[CountryListSchema] = LimitOffsetPage(**response.json())
     assert page.items == []
 
 
