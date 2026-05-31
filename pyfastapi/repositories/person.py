@@ -1,16 +1,18 @@
 from toolz .functoolz import compose  # type: ignore
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy.dialects.sqlite import insert
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 
-from pyfastapi.models import Person, Country
+from pyfastapi.models import Person
 from pyfastapi.schemas import QueryPersonSchema, SortPersonEnum
 from .base import BaseRepository, extract_sort, extract_query
 
 
 class PersonRepository(BaseRepository):
     def get_person(self, id_: int) -> Person | None:
-        stmt = select(Person, Country).join(Country, Person.country_code == Country.code).where(Person.id == id_)
+        stmt = select(Person).options(joinedload(Person.country)).where(Person.id == id_)
         return self.db.execute(stmt).scalar_one_or_none()
 
     def get_persons(self, q: QueryPersonSchema, sort: str) -> LimitOffsetPage[Person]:
@@ -29,5 +31,19 @@ class PersonRepository(BaseRepository):
         return person
 
     def update_or_create_person(self, person: Person) -> None:
-        self.db.merge(person)
+        stmt = insert(Person).values(
+            id=person.id,
+            first_name=person.first_name,
+            last_name=person.last_name,
+            country_code=person.country_code
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=[Person.id],
+            set_={
+                "first_name": stmt.excluded.first_name,
+                "last_name": stmt.excluded.last_name,
+                "country_code": stmt.excluded.country_code,
+            }
+        )
+        self.db.execute(stmt)
         self.db.commit()
