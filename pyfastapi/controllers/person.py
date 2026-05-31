@@ -1,13 +1,12 @@
-import traceback
 from typing import Annotated
 from logging import getLogger
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Path, Query
+from fastapi import APIRouter, Depends, Response, Path, Query
 from fastapi_pagination import LimitOffsetPage
 
 from pyfastapi.models import Person
-from pyfastapi.repositories import PersonRepository
 from pyfastapi.schemas import PersonListSchema, PersonCreateSchema, PersonSchema, QueryPersonSchema
+from pyfastapi.services.person import PersonService
 
 router = APIRouter()
 logger = getLogger(__name__)
@@ -15,53 +14,33 @@ logger = getLogger(__name__)
 
 @router.get("", response_model=LimitOffsetPage[PersonListSchema])
 def get_all_persons(
-        repo: Annotated[PersonRepository, Depends()],
+        service: Annotated[PersonService, Depends()],
         q: Annotated[QueryPersonSchema, Depends()],
         sort: Annotated[str, Query(description="sort by")] = ""
 ) -> LimitOffsetPage[Person]:
-    person = repo.get_persons(q, sort)
-    return person
+    return service.get_persons(q, sort)
 
 
 @router.get("/{id_}", response_model=PersonSchema)
-def get_one_persons(
-    repo: Annotated[PersonRepository, Depends()],
+def get_one_person(
+    service: Annotated[PersonService, Depends()],
     id_: Annotated[int, Path(title="person id")]
 ) -> Person:
-    person = repo.get_person(id_)
-    if not person:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Person {id_} not found")
-    return person
+    return service.get_person(id_)
 
 
 @router.post("", response_model=PersonListSchema)
-def create_person(body: PersonCreateSchema, repo: Annotated[PersonRepository, Depends()]) -> Person:
+def create_person(body: PersonCreateSchema, service: Annotated[PersonService, Depends()]) -> Person:
     logger.debug(f"body {body}")
-    try:
-        person = Person(
-            first_name=body.first_name,
-            last_name=body.last_name,
-            country_code=body.country_code
-        )
-        new_person = repo.create_new_person(person)
-        return new_person
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return service.create_person(body)
 
 
 @router.put("/{id_}")
 def update_person(
     id_: Annotated[int, Path(title="person id")],
     body: PersonCreateSchema,
-    repo: Annotated[PersonRepository, Depends()]
+    service: Annotated[PersonService, Depends()]
 ) -> Response:
     logger.debug(f"body {body}")
-    person = Person(
-        first_name=body.first_name,
-        last_name=body.last_name,
-        country_code=body.country_code
-    )
-    person.id = int(id_)
-    repo.update_or_create_person(person)
+    service.update_person(int(id_), body)
     return Response(status_code=204)
