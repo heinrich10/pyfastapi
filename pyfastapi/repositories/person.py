@@ -27,7 +27,6 @@ class PersonRepository(BaseRepository):
     def create_new_person(self, person: Person) -> Person:
         self.db.add(person)
         self.db.flush()
-        self.db.refresh(person)
         return person
 
     def update_or_create_person(self, person: Person) -> None:
