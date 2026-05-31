@@ -73,13 +73,12 @@ def test_person_full_crud_flow(init_db: None, client: TestClient, db_session: Se
     assert updated_person.country_code == "HK"
 
 
-def test_create_person_invalid_country_code_succeeds_on_sqlite(
+def test_create_person_invalid_country_code_fails_in_service(
     init_db: None, client: TestClient, db_session: Session
 ) -> None:
     """
-    SQLite does not enforce foreign keys by default, so a non-existent country_code
-    is accepted without error. This documents current behavior; a real database
-    with FK enforcement would return an integrity error.
+    With the introduction of the service layer, we now validate country_code existence.
+    Even if SQLite does not enforce FKs, our application logic does.
     """
     data = {
         "first_name": "Ghost",
@@ -87,16 +86,8 @@ def test_create_person_invalid_country_code_succeeds_on_sqlite(
         "country_code": "XX",
     }
     response = client.post("/persons", json=data)
-    # SQLite default: no FK enforcement.
-    assert response.status_code == 200
-    created = PersonListSchema(**response.json())
-
-    # Verify the row was actually inserted into the database
-    person_from_db: Person = db_session.execute(
-        select(Person).where(Person.id == created.id)
-    ).scalar_one()
-    assert person_from_db.first_name == "Ghost"
-    assert person_from_db.country_code == "XX"
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Country XX not found"
 
 
 def test_get_person_not_found(init_db: None, client: TestClient) -> None:

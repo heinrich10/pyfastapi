@@ -26,7 +26,7 @@ class PersonRepository(BaseRepository):
 
     def create_new_person(self, person: Person) -> Person:
         self.db.add(person)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(person)
         return person
 
@@ -46,4 +46,3 @@ class PersonRepository(BaseRepository):
             }
         )
         self.db.execute(stmt)
-        self.db.commit()

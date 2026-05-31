@@ -9,10 +9,10 @@ from pyfastapi.schemas import SortCountryEnum, QueryCountrySchema, SortPersonEnu
 from pyfastapi.repositories import CountryRepository
 from pyfastapi.repositories.base import extract_sort, extract_query
 
-person_reference_sql = "SELECT persons.id, persons.last_name, persons.first_name \nFROM persons"
+person_reference_sql = "SELECT persons.id, persons.last_name, persons.first_name, persons.country_code \nFROM persons"
 
 country_reference_sql = ("SELECT countries.code, countries.name, countries.phone, countries.symbol, countries.capital, "
-                         "countries.currency, countries.alpha_3 \nFROM countries")
+                         "countries.currency, countries.continent_code, countries.alpha_3 \nFROM countries")
 
 
 class TestBaseRepository(TestCase):

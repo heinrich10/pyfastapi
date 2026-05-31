@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -15,7 +15,7 @@ class Continent(Base):
     code: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    country: Mapped["Country"] = relationship(back_populates="continent")
+    countries: Mapped[List["Country"]] = relationship(back_populates="continent")
 
     def __repr__(self) -> str:
         return f"Continent('{self.code}, {self.name}')"
