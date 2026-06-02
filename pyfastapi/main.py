@@ -1,12 +1,24 @@
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 
 from pyfastapi.controllers import person_router, country_router, continent_router
+from pyfastapi.libs.db import get_engine
 from pyfastapi.libs.exceptions import DomainError
+from pyfastapi.utils.logging import init_logger
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    init_logger()
+    yield
+    get_engine().dispose()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.exception_handler(DomainError)
