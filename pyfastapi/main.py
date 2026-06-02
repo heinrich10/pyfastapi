@@ -14,8 +14,10 @@ from pyfastapi.utils.logging import init_logger
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     init_logger()
-    yield
-    get_engine().dispose()
+    try:
+        yield
+    finally:
+        get_engine().dispose()
 
 
 app = FastAPI(lifespan=lifespan)
