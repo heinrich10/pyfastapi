@@ -194,7 +194,7 @@ uv run poe coverage        # Equivalent to: coverage run -m pytest && coverage r
 - **Fixtures**:
   - `init_db`: Resets the database per test function via full Alembic up/down migrations. This guarantees perfect isolation but scales linearly with test count; see `architecture.md` for rationale on keeping this strategy.
   - `db_session`: Yields a properly managed SQLAlchemy `Session` with guaranteed `close()` cleanup.
-  - `client`: Session-scoped `TestClient(app)` used as an async context manager (triggers lifespan events).
+  - `client`: Session-scoped `TestClient(app)` used as a context manager (triggers lifespan events).
   - `add_50_records`, `add_juan_dela_cruz`: Add specific data for pagination/filter tests.
   - Faker is configured with `faker_session_locale = ["en_US"]` and `faker_seed = 12345`.
 
@@ -272,7 +272,7 @@ A `Dockerfile` is provided with a multi-stage build:
 
 ## Conventions
 
-- **Imports**: Use `from __future__ import annotations` style type hints. `TYPE_CHECKING` guards are used for model relationships to avoid circular imports.
+- **Imports**: Use `TYPE_CHECKING` guards for model relationship imports to avoid circular imports.
 - **String quoting**: Double quotes preferred (enforced by `flake8-quotes`).
 - **Sort syntax**: API list endpoints accept a `sort` query parameter. Prefix with `-` for descending (e.g., `-name`), `+` or no prefix for ascending.
 - **Filter syntax**: Query parameters on list endpoints are mapped to schema fields. String fields listed in `use_like_list` use `ILIKE` (`%value%`); others use exact equality.
