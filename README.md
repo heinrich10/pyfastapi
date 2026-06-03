@@ -24,16 +24,15 @@ Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. 
 
 5. Open `http://localhost:5000/docs` to view the OpenAPI docs
 
-## How to run in a container (WIP)
+## How to run in a container
 
 1. Build the image  
-   `podman build -t pyfastapi .`
+   `docker build -t pyfastapi .`
 
 2. Run the image  
-   `podman run -p 5000:5000 pyfastapi`
+   `docker run -p 5000:5000 pyfastapi`
 
-> Note: You can use `docker` instead of `podman` as it is a drop-in replacement.  
-> this part is still WIP.
+> Note: You can use `podman` instead of `docker` as it is a drop-in replacement.
 
 ## Seed Data
 
