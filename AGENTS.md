@@ -154,7 +154,7 @@ uv run python run.py
 
 The API will be available at `http://localhost:5000`. OpenAPI docs are at `/docs`.
 
-> **Note**: The `README.md` and `Dockerfile` reference `poetry`, but the active package manager in CI and the presence of `uv.lock` indicate `uv` is the current standard. The Dockerfile also references `poetry.lock`, which does not exist in the repo.
+> **Note**: The `README.md` and `Dockerfile` use `uv`. The `uv.lock` lockfile is the source of truth for dependencies.
 
 ### Environment Files
 
@@ -253,14 +253,12 @@ GitHub Actions workflow (`.github/workflows/python-app.yml`):
 
 ## Deployment
 
-A `Dockerfile` is provided with a multi-stage build:
+A `Dockerfile` is provided with a single-stage build:
 
-1. **Builder stage** (`python:3.12.1-bookworm`): Installs Poetry and project dependencies.
-2. **Runtime stage** (`python:3.12.1-slim-bookworm`): Copies the virtual environment and source code.
-
-**Entrypoint**: `alembic upgrade head && python -m run`
-
-> **Note**: The Dockerfile currently uses Poetry for installation and references `poetry.lock`, but the repo only contains `uv.lock`. If switching fully to `uv`, the Dockerfile should be updated accordingly.
+- **Base image**: `python:3.12.12-slim-bookworm`
+- **Package manager**: `uv` (installed via pip)
+- **Dependencies**: installed with `uv sync --frozen --no-dev`
+- **Entrypoint**: `uv run --no-sync alembic upgrade head && uv run --no-sync python -m run`
 
 ## Security Considerations
 

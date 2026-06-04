@@ -1,40 +1,22 @@
-FROM python:3.12.1-bookworm as builder
+FROM python:3.12.12-slim-bookworm
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONHASHSEED=random \
-    PYTHONDONTWRITEBYTECODE=1 \
-    # pip:
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    # poetry:
-    POETRY_VERSION=1.7.1 \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    PATH="$PATH:/root/.local/bin"
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install uv (pinned to match CI version)
+RUN pip install --no-cache-dir uv==0.9.18
 
 WORKDIR /app
 
-# install poetry
-RUN pip install pipx
-RUN pipx install "poetry==$POETRY_VERSION"
-RUN pipx ensurepath
+# Copy dependency manifests first for layer caching
+COPY pyproject.toml uv.lock ./
+RUN uv sync --locked --no-dev --no-install-project
 
-# install dependencies
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --without dev --no-root --no-ansi
-
-# next stage
-FROM python:3.12.1-slim-bookworm as runtime
-
-ENV VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
-
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
+# Copy source and install the project itself
 COPY . .
+RUN uv sync --locked --no-dev
 
-# for demo purposes, always run migrations then start the app
-ENTRYPOINT ["/bin/sh", "-c" , "alembic upgrade head && python -m run"]
+# For demo purposes, always run migrations then start the app
+ENTRYPOINT ["/bin/sh", "-c", "uv run --no-sync alembic upgrade head && uv run --no-sync python -m run"]
