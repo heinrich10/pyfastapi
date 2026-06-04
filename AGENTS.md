@@ -258,7 +258,7 @@ A `Dockerfile` is provided with a single-stage build:
 - **Base image**: `python:3.12.12-slim-bookworm`
 - **Package manager**: `uv` (installed via pip)
 - **Dependencies**: installed with `uv sync --frozen --no-dev`
-- **Entrypoint**: `alembic upgrade head && uv run --no-sync python -m run`
+- **Entrypoint**: `uv run --no-sync alembic upgrade head && uv run --no-sync python -m run`
 
 ## Security Considerations
 

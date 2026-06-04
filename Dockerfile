@@ -5,18 +5,18 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONDONTWRITEBYTECODE=1
 
-# Install uv
-RUN pip install --no-cache-dir uv
+# Install uv (pinned to match CI version)
+RUN pip install --no-cache-dir uv==0.9.18
 
 WORKDIR /app
 
 # Copy dependency manifests first for layer caching
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev --no-install-project
+RUN uv sync --locked --no-dev --no-install-project
 
 # Copy source and install the project itself
 COPY . .
-RUN uv sync --frozen --no-dev
+RUN uv sync --locked --no-dev
 
 # For demo purposes, always run migrations then start the app
 ENTRYPOINT ["/bin/sh", "-c", "uv run --no-sync alembic upgrade head && uv run --no-sync python -m run"]
