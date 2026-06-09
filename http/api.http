@@ -34,7 +34,7 @@ Content-Type: application/json
 
 ###
 
-### Update a person
+### Update a person (upsert)
 PUT {{host}}/persons/1
 Content-Type: application/json
 
@@ -43,6 +43,12 @@ Content-Type: application/json
   "last_name": "Doe",
   "country_code": "HK"
 }
+
+###
+
+### Delete a person
+DELETE {{host}}/persons/1
+Accept: application/json
 
 ###
 

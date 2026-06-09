@@ -26,7 +26,9 @@ def mock_db() -> MagicMock:
 
 
 @pytest.fixture
-def person_service(mock_person_repo: MagicMock, mock_country_repo: MagicMock, mock_db: MagicMock) -> PersonService:
+def person_service(
+    mock_person_repo: MagicMock, mock_country_repo: MagicMock, mock_db: MagicMock
+) -> PersonService:
     return PersonService(mock_person_repo, mock_country_repo, mock_db)
 
 
@@ -41,7 +43,9 @@ class TestPersonService:
         mock_person_repo.get_persons.assert_called_once_with(q, sort)
         assert result == mock_person_repo.get_persons.return_value
 
-    def test_get_person_success(self, person_service: PersonService, mock_person_repo: MagicMock) -> None:
+    def test_get_person_success(
+        self, person_service: PersonService, mock_person_repo: MagicMock
+    ) -> None:
         person_id = 1
         expected_person = Person(id=person_id, first_name="John", last_name="Doe")
         mock_person_repo.get_person.return_value = expected_person
@@ -51,7 +55,9 @@ class TestPersonService:
         mock_person_repo.get_person.assert_called_once_with(person_id)
         assert result == expected_person
 
-    def test_get_person_not_found(self, person_service: PersonService, mock_person_repo: MagicMock) -> None:
+    def test_get_person_not_found(
+        self, person_service: PersonService, mock_person_repo: MagicMock
+    ) -> None:
         person_id = 999
         mock_person_repo.get_person.return_value = None
 
@@ -62,7 +68,11 @@ class TestPersonService:
         assert str(person_id) in exc.value.message
 
     def test_create_person_success(
-        self, person_service: PersonService, mock_person_repo: MagicMock, mock_country_repo: MagicMock, mock_db: MagicMock
+        self,
+        person_service: PersonService,
+        mock_person_repo: MagicMock,
+        mock_country_repo: MagicMock,
+        mock_db: MagicMock,
     ) -> None:
         body = PersonCreateSchema(first_name="Jane", last_name="Doe", country_code="US")
         mock_country_repo.get_country.return_value = MagicMock(spec=Country)
@@ -78,7 +88,9 @@ class TestPersonService:
         mock_db.refresh.assert_called_once_with(created_person)
         assert result == created_person
 
-    def test_create_person_country_not_found(self, person_service: PersonService, mock_country_repo: MagicMock) -> None:
+    def test_create_person_country_not_found(
+        self, person_service: PersonService, mock_country_repo: MagicMock
+    ) -> None:
         body = PersonCreateSchema(first_name="Jane", last_name="Doe", country_code="XX")
         mock_country_repo.get_country.return_value = None
 
@@ -87,18 +99,21 @@ class TestPersonService:
 
         mock_country_repo.get_country.assert_called_once_with("XX")
 
-    def test_update_person_success(
-        self, person_service: PersonService, mock_person_repo: MagicMock, mock_country_repo: MagicMock, mock_db: MagicMock
+    def test_update_or_create_person_success(
+        self,
+        person_service: PersonService,
+        mock_person_repo: MagicMock,
+        mock_country_repo: MagicMock,
+        mock_db: MagicMock,
     ) -> None:
         person_id = 1
         body = PersonCreateSchema(first_name="Jane", last_name="Doe", country_code="US")
         mock_country_repo.get_country.return_value = MagicMock(spec=Country)
 
-        person_service.update_person(person_id, body)
+        person_service.update_or_create_person(person_id, body)
 
         mock_country_repo.get_country.assert_called_once_with("US")
         mock_person_repo.update_or_create_person.assert_called_once()
-        # Verify the person object passed to repo has correct ID
         args, _ = mock_person_repo.update_or_create_person.call_args
         passed_person = args[0]
         assert passed_person.id == person_id
@@ -106,12 +121,42 @@ class TestPersonService:
 
         mock_db.commit.assert_called_once()
 
-    def test_update_person_country_not_found(self, person_service: PersonService, mock_country_repo: MagicMock) -> None:
+    def test_update_or_create_person_country_not_found(
+        self, person_service: PersonService, mock_country_repo: MagicMock
+    ) -> None:
         person_id = 1
         body = PersonCreateSchema(first_name="Jane", last_name="Doe", country_code="XX")
         mock_country_repo.get_country.return_value = None
 
         with pytest.raises(CountryNotFoundError):
-            person_service.update_person(person_id, body)
+            person_service.update_or_create_person(person_id, body)
 
         mock_country_repo.get_country.assert_called_once_with("XX")
+
+    def test_delete_person_success(
+        self,
+        person_service: PersonService,
+        mock_person_repo: MagicMock,
+        mock_db: MagicMock,
+    ) -> None:
+        person_id = 1
+        existing_person = Person(id=person_id, first_name="John", last_name="Doe", country_code="US")
+        mock_person_repo.get_person.return_value = existing_person
+
+        person_service.delete_person(person_id)
+
+        mock_person_repo.get_person.assert_called_once_with(person_id)
+        mock_person_repo.delete_person.assert_called_once_with(existing_person)
+        mock_db.commit.assert_called_once()
+
+    def test_delete_person_not_found(
+        self, person_service: PersonService, mock_person_repo: MagicMock
+    ) -> None:
+        person_id = 999
+        mock_person_repo.get_person.return_value = None
+
+        with pytest.raises(PersonNotFoundError) as exc:
+            person_service.delete_person(person_id)
+
+        assert exc.value.status_code == 404
+        assert str(person_id) in exc.value.message

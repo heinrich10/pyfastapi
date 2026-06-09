@@ -42,5 +42,14 @@ def update_person(
     service: Annotated[PersonService, Depends()]
 ) -> Response:
     logger.debug(f"body {body}")
-    service.update_person(int(id_), body)
+    service.update_or_create_person(int(id_), body)
+    return Response(status_code=204)
+
+
+@router.delete("/{id_}")
+def delete_person(
+    id_: Annotated[int, Path(title="person id")],
+    service: Annotated[PersonService, Depends()]
+) -> Response:
+    service.delete_person(int(id_))
     return Response(status_code=204)
