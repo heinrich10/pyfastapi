@@ -23,24 +23,21 @@ class TestBaseRepository(TestCase):
         cls.repo = CountryRepository(Session())
 
     def test_country(self) -> None:
-        val = extract_sort(Country, SortCountryEnum, "name")(select(Country))
+        val = extract_sort(Country, SortCountryEnum, "name", select(Country))
         print("val", val)
 
     def test_person(self) -> None:
-        val = extract_sort(Person, SortPersonEnum, "id")(select(Person))
+        val = extract_sort(Person, SortPersonEnum, "id", select(Person))
         print("person", val)
 
 
 class TestCountryRepository(TestCase):
     def generate_from_sqlalchemy(self, sort_key_: str) -> str:
-        stmt_ = extract_sort(Country, SortCountryEnum, sort_key_)(select(Country))
+        stmt_ = extract_sort(Country, SortCountryEnum, sort_key_, select(Country))
         return str(stmt_)
 
     def get_extract_query(self, q: QueryCountrySchema) -> Select[Tuple[Country]]:
-        """
-        ignore because it returns any
-        """
-        return extract_query(Country, ["name"], q)(select(Country))  # type: ignore
+        return extract_query(Country, ["name"], q, select(Country))
 
     def test_country_extract_sort_if_part_of_enum_asc(self) -> None:
         def generate_sql(sort_key_: str) -> str:
@@ -95,14 +92,11 @@ class TestCountryRepository(TestCase):
 
 class TestPersonRepository(TestCase):
     def generate_from_sqlalchemy(self, sort_key_: str) -> str:
-        stmt_ = extract_sort(Person, SortPersonEnum, sort_key_)(select(Person))
+        stmt_ = extract_sort(Person, SortPersonEnum, sort_key_, select(Person))
         return str(stmt_)
 
     def get_extract_query(self, q: QueryPersonSchema) -> Select[Tuple[Person]]:
-        """
-        ignore because it returns any
-        """
-        return extract_query(Person, ["first_name", "last_name"], q)(select(Person))  # type: ignore
+        return extract_query(Person, ["first_name", "last_name"], q, select(Person))
 
     # extract sort
     def test_person_extract_sort_if_part_of_enum_asc(self) -> None:

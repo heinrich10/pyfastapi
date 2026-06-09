@@ -1,4 +1,3 @@
-from toolz.functoolz import compose  # type: ignore
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import joinedload
@@ -15,10 +14,8 @@ class CountryRepository(BaseRepository):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def get_countries(self, q: QueryCountrySchema, sort: str) -> LimitOffsetPage[Country]:
-        f = compose(
-            extract_query(Country, ["name"], q),
-            extract_sort(Country, SortCountryEnum, sort)
-        )
-        stmt = f(select(Country))
+        stmt = select(Country)
+        stmt = extract_sort(Country, SortCountryEnum, sort, stmt)
+        stmt = extract_query(Country, ["name"], q, stmt)
         country_list: LimitOffsetPage[Country] = paginate(self.db, stmt)
         return country_list
