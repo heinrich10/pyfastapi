@@ -1,4 +1,3 @@
-from toolz .functoolz import compose  # type: ignore
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.dialects.sqlite import insert
@@ -16,11 +15,9 @@ class PersonRepository(BaseRepository):
         return self.db.execute(stmt).scalar_one_or_none()
 
     def get_persons(self, q: QueryPersonSchema, sort: str) -> LimitOffsetPage[Person]:
-        f = compose(
-            extract_query(Person, ["first_name", "last_name"], q),
-            extract_sort(Person, SortPersonEnum, sort)
-        )
-        stmt = f(select(Person))
+        stmt = select(Person)
+        stmt = extract_sort(Person, SortPersonEnum, sort, stmt)
+        stmt = extract_query(Person, ["first_name", "last_name"], q, stmt)
         person_list: LimitOffsetPage[Person] = paginate(self.db, stmt)
         return person_list
 
