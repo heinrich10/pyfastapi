@@ -40,9 +40,9 @@ def extract_sort(
     first_char = sort[0]
     sort_key = sort[1:] if first_char in ["-", "+"] else sort
 
-    if sort_key in enum:
-        if sort[0] == "-":
-            return stmt.order_by(getattr(model, sort_key).desc())
-        else:
-            return stmt.order_by(getattr(model, sort_key).asc())
-    return stmt
+    if sort_key not in enum:
+        return stmt
+
+    if sort[0] == "-":
+        return stmt.order_by(getattr(model, sort_key).desc())
+    return stmt.order_by(getattr(model, sort_key).asc())
