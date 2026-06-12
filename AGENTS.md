@@ -294,6 +294,6 @@ A `Dockerfile` is provided with a single-stage build:
 - **Filter syntax**: `/persons` and `/countries` map query parameters to schema fields. String fields listed in `use_like_list` use `ILIKE` (`%value%`); others use exact equality.
 - **Logging**: `init_logger()` must run before the app starts. It configures colored uvicorn-style formatters. Log level is hard-coded in `utils/logging.py`; edit the `LOG_LEVEL` constant to change it.
 - **Schema naming**: `*Schema` for responses, `*ListSchema` for paginated/list items, `Query*Schema` for filters, `Sort*Enum` for sortable fields.
-- **Repository patterns**: `BaseRepository` inherits from `ABC` but defines no abstract methods. Repositories use `flush()` / `execute()`; transaction boundaries (`commit()`) are managed at the Service layer.
+- **Repository patterns**: `BaseRepository` serves as a base class for data access logic. Repositories use `flush()` / `execute()`; transaction boundaries (`commit()`) are managed at the Service layer.
 - **Trailing slashes**: Collection list endpoints are registered without a trailing slash (e.g., `/persons`, `/countries`, `/continents`). FastAPI's default `redirect_slashes` behavior will redirect the slash variant (`/persons/`) to the canonical path with a `307`.
 - **Lifespan**: `pyfastapi/main.py` defines an `asynccontextmanager` lifespan that runs `init_logger()` on startup and `get_engine().dispose()` on shutdown.

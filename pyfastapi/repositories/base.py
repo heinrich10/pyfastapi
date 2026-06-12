@@ -1,4 +1,3 @@
-from abc import ABC
 from typing import Annotated, Tuple, List, Type, TypeVar
 
 from fastapi import Depends
@@ -13,7 +12,7 @@ from pyfastapi.schemas.base import BaseEnum
 T = TypeVar("T", bound=Base)
 
 
-class BaseRepository(ABC):
+class BaseRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
         self.db = db
 
