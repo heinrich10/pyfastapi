@@ -35,7 +35,7 @@ def create_person(body: PersonCreateSchema, service: Annotated[PersonService, De
     return service.create_person(body)
 
 
-@router.put("/{id_}")
+@router.put("/{id_}", status_code=204)
 def update_person(
     id_: Annotated[int, Path(title="person id")],
     body: PersonCreateSchema,
@@ -46,7 +46,7 @@ def update_person(
     return Response(status_code=204)
 
 
-@router.delete("/{id_}")
+@router.delete("/{id_}", status_code=204)
 def delete_person(
     id_: Annotated[int, Path(title="person id")],
     service: Annotated[PersonService, Depends()]

@@ -1,6 +1,7 @@
 from toolz .functoolz import compose  # type: ignore
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 
@@ -29,7 +30,6 @@ class PersonRepository(BaseRepository):
         return person
 
     def update_or_create_person(self, person: Person) -> None:
-        from sqlalchemy.dialects.sqlite import insert
         stmt = insert(Person).values(
             id=person.id,
             first_name=person.first_name,

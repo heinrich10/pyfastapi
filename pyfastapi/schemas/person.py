@@ -27,16 +27,6 @@ class PersonCreateSchema(PersonBaseSchema):
     country_code: str
 
 
-class PersonUpdateSchema(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    country_code: str | None = None
-
-    model_config = {
-        "from_attributes": True
-    }
-
-
 class QueryPersonSchema(BaseModel):
     last_name: str | None = None
     first_name: str | None = None
