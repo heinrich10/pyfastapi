@@ -98,8 +98,7 @@ def test_get_person_not_found(init_db: None, client: TestClient) -> None:
 
 def test_update_person_nonexistent_id_still_returns_204(init_db: None, client: TestClient, db_session: Session) -> None:
     """
-    merge() semantics mean updating a non-existent ID may INSERT instead of 404.
-    Document current behavior so regressions are visible.
+    PUT semantics mean updating a non-existent ID creates the resource (upsert).
     """
     data = {
         "first_name": "New",
@@ -107,10 +106,9 @@ def test_update_person_nonexistent_id_still_returns_204(init_db: None, client: T
         "country_code": "PH",
     }
     response = client.put("/persons/99999", json=data)
-    # Current implementation returns 204 regardless because merge() can create.
     assert response.status_code == 204
 
-    # Verify merge() actually created the row in the database
+    # Verify the upsert actually created the row in the database
     person_from_db: Person = db_session.execute(
         select(Person).where(Person.id == 99999)
     ).scalar_one()

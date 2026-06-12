@@ -45,3 +45,6 @@ class PersonRepository(BaseRepository):
             }
         )
         self.db.execute(stmt)
+
+    def delete_person(self, person: Person) -> None:
+        self.db.delete(person)

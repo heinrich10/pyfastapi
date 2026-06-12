@@ -61,6 +61,8 @@ Sample backend API built with **FastAPI**, **SQLAlchemy 2.x**, and **Alembic**. 
 - **No trailing slashes on collection endpoints.** Routes are registered as `/persons`, `/countries`, and `/continents`. Accessing the trailing-slash variant (e.g., `/persons/`) will receive a `307 Temporary Redirect` to the canonical path.
 - **Sort syntax**: Prefix with `-` for descending (e.g., `-name`), `+` or no prefix for ascending.
 - **Filter syntax**: Query parameters are mapped to schema fields. String fields use `ILIKE` (`%value%`); others use exact equality.
+- **`PUT /persons/{id}` is an upsert.** If the ID exists it is updated; if it does not exist a new person is created with that ID. Returns `204 No Content`.
+- **`DELETE /persons/{id}`** removes the person and returns `204 No Content`. Returns `404 Not Found` if the person does not exist.
 
 ## Data Model
 

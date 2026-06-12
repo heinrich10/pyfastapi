@@ -196,7 +196,6 @@ def test_update_person(init_db: None, client: TestClient, db_session: Session) -
 
 
 def test_upsert_create(init_db: None, client: TestClient, db_session: Session) -> None:
-    # Use an ID that doesn't exist in seed data (seed data has 13 persons, IDs likely 1-13)
     new_id = 999
     first_name = "Upsert"
     last_name = "Create"
@@ -207,15 +206,12 @@ def test_upsert_create(init_db: None, client: TestClient, db_session: Session) -
         "country_code": country_code,
     }
 
-    # Verify it doesn't exist
     stmt_check = select(Person).where(Person.id == new_id)
     assert db_session.execute(stmt_check).scalar_one_or_none() is None
 
-    # Perform PUT (UPSERT)
     response = client.put(f"/persons/{new_id}", json=data)
     assert response.status_code == 204
 
-    # Verify it was created
     person_from_db = db_session.execute(stmt_check).scalar_one()
     assert person_from_db.id == new_id
     assert person_from_db.first_name == first_name
@@ -224,7 +220,6 @@ def test_upsert_create(init_db: None, client: TestClient, db_session: Session) -
 
 
 def test_upsert_update(init_db: None, client: TestClient, db_session: Session) -> None:
-    # Use an existing ID from seed data
     existing_id = 1
     first_name = "Upsert"
     last_name = "Update"
@@ -235,19 +230,42 @@ def test_upsert_update(init_db: None, client: TestClient, db_session: Session) -
         "country_code": country_code,
     }
 
-    # Verify it exists and is different
     stmt_check = select(Person).where(Person.id == existing_id)
     person_before = db_session.execute(stmt_check).scalar_one()
     assert person_before.first_name != first_name
 
-    # Perform PUT (UPSERT)
     response = client.put(f"/persons/{existing_id}", json=data)
     assert response.status_code == 204
 
-    # Verify it was updated
-    db_session.expire_all()  # Ensure we get fresh data
+    db_session.expire_all()
     person_after = db_session.execute(stmt_check).scalar_one()
     assert person_after.id == existing_id
     assert person_after.first_name == first_name
     assert person_after.last_name == last_name
     assert person_after.country_code == country_code
+
+
+def test_delete_person(init_db: None, client: TestClient, db_session: Session) -> None:
+    person_id = 1
+    # Verify the person exists before deletion
+    stmt_check = select(Person).where(Person.id == person_id)
+    person_before = db_session.execute(stmt_check).scalar_one()
+    assert person_before is not None
+
+    response = client.delete(f"/persons/{person_id}")
+    assert response.status_code == 204
+
+    # Verify the person no longer exists
+    person_after = db_session.execute(stmt_check).scalar_one_or_none()
+    assert person_after is None
+
+    # Verify total count decreased by 1
+    count: int = db_session.execute(select(func.count()).select_from(Person)).scalar_one()
+    assert count == NUM_SEED_DATA - 1
+
+
+def test_delete_person_not_found(init_db: None, client: TestClient, db_session: Session) -> None:
+    person_id = 999
+    response = client.delete(f"/persons/{person_id}")
+    assert response.status_code == 404
+    assert response.json() == {"detail": f"Person {person_id} not found"}
