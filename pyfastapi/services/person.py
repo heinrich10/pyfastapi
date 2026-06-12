@@ -44,7 +44,7 @@ class PersonService:
         self.db.refresh(new_person)
         return new_person
 
-    def update_person(self, id_: int, body: PersonCreateSchema) -> None:
+    def update_or_create_person(self, id_: int, body: PersonCreateSchema) -> None:
         if not self.country_repo.get_country(body.country_code):
             raise CountryNotFoundError(body.country_code)
 
@@ -55,4 +55,12 @@ class PersonService:
         )
         person.id = id_
         self.person_repo.update_or_create_person(person)
+        self.db.commit()
+
+    def delete_person(self, id_: int) -> None:
+        person = self.person_repo.get_person(id_)
+        if not person:
+            raise PersonNotFoundError(id_)
+
+        self.person_repo.delete_person(person)
         self.db.commit()
